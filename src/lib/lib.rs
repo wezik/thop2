@@ -1,5 +1,5 @@
 // Core "upper" module containing non engine specific code
-pub mod app {}
+pub mod inbound {}
 
 pub mod domain {
 
@@ -13,7 +13,7 @@ pub mod domain {
     pub mod error;
 }
 
-pub mod infrastructure {
+pub mod outbound {
 
     pub mod persistence {
         pub mod ram_template_repository;

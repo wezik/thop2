@@ -1,13 +1,17 @@
-use crate::domain::{error::DomainError, template::models::{Template, TEMPLATE_NOT_FOUND}};
+use crate::domain::{error::DomainError, template::{models::{Path, Template}, ports::TemplateRepository}};
 
-pub struct Service {}
+pub struct Service {
+    repository: Box<dyn TemplateRepository>,
+}
 
-pub fn new() -> Service {
-    Service {}
+pub fn new(repository: Box<dyn TemplateRepository>) -> Service {
+    Service { 
+        repository: repository,
+    }
 }
 
 impl Service {
-    pub fn get_template(&self) -> Result<Template, DomainError>{
-        Err(TEMPLATE_NOT_FOUND.with_attr("template_name", "foo").build())
+    pub fn get_template(&self, path: Path) -> Result<Template, DomainError>{
+        self.repository.get_template(path)
     }
 }

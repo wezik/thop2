@@ -5,7 +5,6 @@ use std::{collections::HashMap, error::Error};
 pub struct DomainErrorTemplate {
     pub code: &'static str,
     pub message: &'static str,
-    pub attributes: Option<HashMap<String, String>>,
 }
 
 impl DomainErrorTemplate {
@@ -13,22 +12,16 @@ impl DomainErrorTemplate {
         Self {
             code,
             message,
-            attributes: Option::None,
         }
     }
 
-    pub fn with_attr(mut self, key: impl Into<String>, value: impl Into<String>) -> DomainErrorTemplate {
-        let mut attributes = self.attributes.unwrap_or(HashMap::new());
+    pub fn with_attr(self, key: impl Into<String>, value: impl Into<String>) -> DomainError {
+        let mut attributes = HashMap::new();
         attributes.insert(key.into(), value.into());
-        self.attributes = Option::Some(attributes);
-        self
-    }
-
-    pub fn build(self) -> DomainError {
         DomainError {
             code: self.code,
             message: self.message,
-            attributes: self.attributes.unwrap_or(HashMap::new()),
+            attributes: attributes,
         }
     }
 }
@@ -42,14 +35,6 @@ pub struct DomainError {
 }
 
 impl DomainError {
-    pub fn new(code: &'static str, message: &'static str) -> Self {
-        Self {
-            code,
-            message,
-            attributes: HashMap::new(),
-        }
-    }
-
     pub fn with_attr(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.attributes.insert(key.into(), value.into());
         self

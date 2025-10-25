@@ -20,10 +20,7 @@ impl DomainErrorTemplate {
 }
 
 pub const fn new(code: &'static str, message: &'static str) -> DomainErrorTemplate {
-    DomainErrorTemplate {
-        code,
-        message,
-    }
+    DomainErrorTemplate { code, message }
 }
 
 // Domain error definiton

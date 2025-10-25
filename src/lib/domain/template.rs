@@ -13,7 +13,8 @@ pub struct Path(pub String);
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Name(pub String);
 
-pub const TEMPLATE_NOT_FOUND: DomainErrorTemplate = error::new("TEMPLATE_NOT_FOUND", "Template not found");
+pub const TEMPLATE_NOT_FOUND: DomainErrorTemplate =
+    error::new("TEMPLATE_NOT_FOUND", "Template not found");
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum Engine {
@@ -22,4 +23,5 @@ pub enum Engine {
     // Zellij,
 }
 
-pub const ENGINE_NOT_SUPPORTED: DomainErrorTemplate = error::new("ENGINE_NOT_SUPPORTED", "Engine not supported");
+pub const ENGINE_NOT_SUPPORTED: DomainErrorTemplate =
+    error::new("ENGINE_NOT_SUPPORTED", "Engine not supported");

@@ -3,11 +3,10 @@ pub mod app {}
 
 pub mod domain {
 
-    pub mod template {
-        pub mod models;
-        pub mod ports;
-        pub mod service;
-    }
+    pub mod template;
+    pub mod template_repository;
+    pub mod template_selector;
+    pub mod template_service;
 
     pub mod error;
 }

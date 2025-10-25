@@ -1,6 +1,9 @@
 use mockall::automock;
 
-use crate::domain::{error::DomainError, template::models::{Path, Template}};
+use crate::domain::{
+    error::DomainError,
+    template::{Path, Template},
+};
 
 #[automock]
 pub trait TemplateRepository {

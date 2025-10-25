@@ -1,4 +1,4 @@
-use crab_hop::domain::template::models::{Engine, Name, Path, Template};
+use crab_hop::domain::template::{Engine, Name, Path, Template};
 
 pub fn some_template() -> Template {
     Template {

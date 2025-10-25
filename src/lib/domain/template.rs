@@ -5,6 +5,7 @@ pub struct Template {
     pub path: Path,
     pub name: Name,
     pub engine: Engine,
+    pub commands: Commands,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
@@ -12,6 +13,9 @@ pub struct Path(pub String);
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Name(pub String);
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+pub struct Commands(pub Vec<String>);
 
 pub const TEMPLATE_NOT_FOUND: DomainErrorTemplate =
     error::new("TEMPLATE_NOT_FOUND", "Template not found");

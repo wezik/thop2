@@ -1,24 +1,20 @@
 use crab_hop::{
-    domain::{template, template_service::TemplateService},
+    domain::{template, template_service::TemplateService, thop_service::ThopService},
     infrastructure::persistence::ram_template_repository::RamTemplateRepository,
 };
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
-    let repository = RamTemplateRepository::new();
-    let service = TemplateService::new(Box::new(repository));
+    let template_repository = RamTemplateRepository::new();
+    let template_service = TemplateService::new(Box::new(template_repository));
+    let thop_service = ThopService::new(template_service);
 
     if args.len() > 1 {
         let path = args[1].clone();
-        match service.get(template::Path(path)) {
-            Ok(t) => println!("Template: {:?}", t),
+        match thop_service.open(template::Path(path)) {
+            Ok(_) => println!("Success"),
             Err(e) => println!("Error: {}", e),
         }
-    }
-
-    println!("Templates:");
-    for t in service.list() {
-        println!("{:?}", t);
     }
 }

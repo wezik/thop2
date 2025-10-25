@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::domain::{
     error::DomainError,
-    template::{Engine, Name, Path, Template, TEMPLATE_NOT_FOUND},
+    template::{Commands, Engine, Name, Path, Template, TEMPLATE_NOT_FOUND},
     template_repository::TemplateRepository,
 };
 
@@ -39,11 +39,19 @@ fn preload_templates() -> Vec<Template> {
             path: Path("resources/template.yaml".to_string()),
             name: Name("FooBar".to_string()),
             engine: Engine::Command,
+            commands: Commands(vec![
+                "echo 'Hello World'".to_string(),
+                "echo 'Goodbye World'".to_string(),
+            ]),
         },
         Template {
             path: Path("resources/template-2.yaml".to_string()),
             name: Name("BarFoo".to_string()),
             engine: Engine::Command,
+            commands: Commands(vec![
+                "echo 'Hello World'".to_string(),
+                "echo 'Goodbye World'".to_string(),
+            ]),
         },
     ]
 }

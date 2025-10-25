@@ -3,6 +3,8 @@ pub mod app {}
 
 pub mod domain {
 
+    pub mod thop_service;
+
     pub mod template;
     pub mod template_repository;
     pub mod template_selector;

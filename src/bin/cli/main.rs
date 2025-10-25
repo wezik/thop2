@@ -9,7 +9,7 @@ fn main() {
 
     if args.len() > 1 {
         let path = args[1].clone();
-        match service.get_template(template::models::Path(path)) {
+        match service.get(template::models::Path(path)) {
             Ok(t) => println!("Template: {:?}", t),
             Err(e) => println!("Error: {}", e),
         }

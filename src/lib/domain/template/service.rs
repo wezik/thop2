@@ -11,7 +11,7 @@ pub fn new(repository: Box<dyn TemplateRepository>) -> Service {
 }
 
 impl Service {
-    pub fn get_template(&self, path: Path) -> Result<Template, DomainError>{
-        self.repository.get_template(path)
+    pub fn get(&self, path: Path) -> Result<Template, DomainError>{
+        self.repository.find(path)
     }
 }

@@ -8,13 +8,6 @@ pub struct DomainErrorTemplate {
 }
 
 impl DomainErrorTemplate {
-    pub const fn new(code: &'static str, message: &'static str) -> Self {
-        Self {
-            code,
-            message,
-        }
-    }
-
     pub fn with_attr(self, key: impl Into<String>, value: impl Into<String>) -> DomainError {
         let mut attributes = HashMap::new();
         attributes.insert(key.into(), value.into());
@@ -23,6 +16,13 @@ impl DomainErrorTemplate {
             message: self.message,
             attributes: attributes,
         }
+    }
+}
+
+pub const fn new(code: &'static str, message: &'static str) -> DomainErrorTemplate {
+    DomainErrorTemplate {
+        code,
+        message,
     }
 }
 

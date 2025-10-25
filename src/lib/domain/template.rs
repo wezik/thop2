@@ -20,6 +20,9 @@ pub struct Commands(pub Vec<String>);
 pub const TEMPLATE_NOT_FOUND: DomainErrorTemplate =
     error::new("TEMPLATE_NOT_FOUND", "Template not found");
 
+pub const TEMPLATE_ALREADY_EXSISTS: DomainErrorTemplate =
+    error::new("TEMPLATE_ALREADY_EXISTS", "Template already exists");
+
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum Engine {
     Command,

@@ -13,6 +13,10 @@ impl TemplateService {
         }
     }
 
+    pub fn create(&mut self, template: Template) -> Result<(), DomainError> {
+        self.repository.create(template)
+    }
+
     pub fn get(&self, path: Path) -> Result<Template, DomainError> {
         self.repository.find(path)
     }

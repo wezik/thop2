@@ -3,6 +3,8 @@ pub mod inbound {}
 
 pub mod domain {
 
+    pub mod environment;
+
     pub mod thop_service;
 
     pub mod template;
@@ -14,6 +16,10 @@ pub mod domain {
 }
 
 pub mod outbound {
+
+    pub mod os {
+        pub mod system_environment;
+    }
 
     pub mod persistence {
         pub mod ram_template_repository;

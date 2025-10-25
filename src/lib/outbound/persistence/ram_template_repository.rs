@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::domain::{
     error::DomainError,
-    template::{Commands, Engine, Name, Path, Template, TEMPLATE_NOT_FOUND},
+    template::{Commands, Engine, Name, Path, Template, TEMPLATE_ALREADY_EXSISTS, TEMPLATE_NOT_FOUND},
     template_repository::TemplateRepository,
 };
 
@@ -11,6 +11,15 @@ pub struct RamTemplateRepository {
 }
 
 impl TemplateRepository for RamTemplateRepository {
+    fn create(&mut self, template: Template) -> Result<(), DomainError> {
+        match self.templates.get(&template.path) {
+            Some(_) => return Err(TEMPLATE_ALREADY_EXSISTS.with_attr("path", template.path.0)),
+            None => self.templates.insert(template.path.clone(), template),
+        };
+
+        Ok(())
+    }
+
     fn find(&self, path: Path) -> Result<Template, DomainError> {
         match self.templates.get(&path) {
             Some(t) => Ok(t.clone()),

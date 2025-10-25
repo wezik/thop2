@@ -1,21 +1,24 @@
+use std::sync::{Arc, Mutex};
+
 use crab_hop::{
     domain::{error::DomainError, template, template_service::TemplateService, thop_service::{CreateCommand, OpenCommand, ThopService}},
     engines::command_engine::{
         domain::command_service::CommandService, inbound::command_engine::CommandEngine,
     },
-    outbound::{os::system_environment::SystemEnvironment, persistence::ram_template_repository::RamTemplateRepository},
+    outbound::{os::system_environment::SystemEnvironment, persistence::ram_template_repository::RamTemplateRepository, selector::fzf_selector::FzfSelector},
 };
 
 fn main() -> Result<(), DomainError> {
     let args: Vec<String> = std::env::args().collect();
 
     let command_engine = CommandEngine::new(CommandService::new());
-    let environment = Box::new(SystemEnvironment::new());
+    let environment = Arc::new(SystemEnvironment::new());
+    let template_selector = Arc::new(FzfSelector::new(environment.clone()));
 
-    let template_repository = RamTemplateRepository::new();
-    let template_service = TemplateService::new(Box::new(template_repository));
+    let template_repository = Arc::new(Mutex::new(RamTemplateRepository::new()));
+    let template_service = TemplateService::new(template_repository.clone());
 
-    let mut thop_service = ThopService::new(template_service, command_engine, environment);
+    let mut thop_service = ThopService::new(template_service, command_engine, environment.clone(), template_selector);
 
     if args.len() > 2 {
         let command = args[1].as_str();

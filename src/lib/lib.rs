@@ -24,6 +24,10 @@ pub mod outbound {
     pub mod persistence {
         pub mod ram_template_repository;
     }
+
+    pub mod selector {
+        pub mod fzf_selector;
+    }
 }
 
 pub mod engines {

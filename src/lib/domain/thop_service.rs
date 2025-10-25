@@ -1,5 +1,7 @@
+use std::sync::Arc;
+
 use crate::{
-    domain::{environment::Environment, error::DomainError, template, template_service::TemplateService},
+    domain::{environment::Environment, error::DomainError, template, template_selector::TemplateSelector, template_service::TemplateService},
     engines::command_engine::inbound::command_engine::CommandEngine,
 };
 
@@ -23,22 +25,22 @@ pub struct OpenCommand {
 pub struct ThopService {
     pub template_service: TemplateService,
     pub command_engine: CommandEngine,
-    pub environment: Box<dyn Environment>,
-    // pub template_selector: Box<dyn TemplateSelector>,
+    pub environment: Arc<dyn Environment>,
+    pub template_selector: Arc<dyn TemplateSelector>,
 }
 
 impl ThopService {
     pub fn new(
         template_service: TemplateService,
         command_engine: CommandEngine,
-        environment: Box<dyn Environment>,
-        // template_selector: Box<dyn TemplateSelector>,
+        environment: Arc<dyn Environment>,
+        template_selector: Arc<dyn TemplateSelector>,
     ) -> ThopService {
         ThopService {
             template_service: template_service,
             command_engine: command_engine,
             environment: environment,
-            // template_selector: template_selector,
+            template_selector: template_selector,
         }
     }
 

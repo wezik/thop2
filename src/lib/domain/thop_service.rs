@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
-use crate::{
-    domain::{environment::Environment, error::DomainError, template, template_selector::TemplateSelector, template_service::TemplateService},
-    engines::command_engine::inbound::command_engine::CommandEngine,
-};
+use crate::domain::template_service::TemplateService;
+use crate::domain::{environment::Environment, error::DomainError, selector::Selector, template};
+use crate::engines::command_engine::inbound::command_engine::CommandEngine;
 
 pub struct CreateCommand {
     pub name: Option<template::Name>,
@@ -26,7 +25,7 @@ pub struct ThopService {
     pub template_service: TemplateService,
     pub command_engine: CommandEngine,
     pub environment: Arc<dyn Environment>,
-    pub template_selector: Arc<dyn TemplateSelector>,
+    pub selector: Arc<dyn Selector>,
 }
 
 impl ThopService {
@@ -34,13 +33,13 @@ impl ThopService {
         template_service: TemplateService,
         command_engine: CommandEngine,
         environment: Arc<dyn Environment>,
-        template_selector: Arc<dyn TemplateSelector>,
+        template_selector: Arc<dyn Selector>,
     ) -> ThopService {
         ThopService {
             template_service: template_service,
             command_engine: command_engine,
             environment: environment,
-            template_selector: template_selector,
+            selector: template_selector,
         }
     }
 
@@ -66,11 +65,31 @@ impl ThopService {
         Ok(())
     }
 
-
     pub fn open(&self, command: OpenCommand) -> Result<(), DomainError> {
         let path = match command.path {
-            Some(path) => path,
-            None => unimplemented!("Open without path"), // TODO: Selector for templates
+            Some(path) => path.clone(),
+            None => {
+                let templates = self.template_service.list();
+
+                let names = templates
+                    .iter()
+                    .map(|template| template.name.0.as_str())
+                    .collect::<Vec<&str>>();
+
+                let selected_name = match self.selector.select_from(&names)? {
+                    Some(name) => name,
+                    None => return Ok(()),
+                };
+
+                let template = templates
+                    .iter()
+                    .find(|template| template.name.0 == selected_name)
+                    .ok_or_else(|| {
+                        template::TEMPLATE_NOT_FOUND.with_attr("name", selected_name.to_string())
+                    })?;
+
+                template.path.clone()
+            }
         };
 
         let template = self.template_service.get(path)?;

@@ -16,7 +16,11 @@ fn gets_template() {
     let template = some_template();
 
     let repository = repository();
-    repository.lock().unwrap().expect_find().return_const(Ok(template.clone()));
+    repository
+        .lock()
+        .unwrap()
+        .expect_find()
+        .return_const(Ok(template.clone()));
 
     let service = TemplateService::new(repository.clone());
 
@@ -33,7 +37,11 @@ fn lists_templates() {
     let templates = vec![some_template(), some_template()];
 
     let repository = repository();
-    repository.lock().unwrap().expect_list().return_const(templates.clone());
+    repository
+        .lock()
+        .unwrap()
+        .expect_list()
+        .return_const(templates.clone());
 
     let service = TemplateService::new(repository);
 

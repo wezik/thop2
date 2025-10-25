@@ -1,11 +1,20 @@
 use std::sync::{Arc, Mutex};
 
 use crab_hop::{
-    domain::{error::DomainError, template, template_service::TemplateService, thop_service::{CreateCommand, OpenCommand, ThopService}},
+    domain::{
+        error::DomainError,
+        template,
+        template_service::TemplateService,
+        thop_service::{CreateCommand, OpenCommand, ThopService},
+    },
     engines::command_engine::{
         domain::command_service::CommandService, inbound::command_engine::CommandEngine,
     },
-    outbound::{os::system_environment::SystemEnvironment, persistence::ram_template_repository::RamTemplateRepository, selector::fzf_selector::FzfSelector},
+    outbound::{
+        os::system_environment::SystemEnvironment,
+        persistence::ram_template_repository::RamTemplateRepository,
+        selector::fzf_selector::FzfSelector,
+    },
 };
 
 fn main() -> Result<(), DomainError> {
@@ -18,7 +27,12 @@ fn main() -> Result<(), DomainError> {
     let template_repository = Arc::new(Mutex::new(RamTemplateRepository::new()));
     let template_service = TemplateService::new(template_repository.clone());
 
-    let mut thop_service = ThopService::new(template_service, command_engine, environment.clone(), template_selector);
+    let mut thop_service = ThopService::new(
+        template_service,
+        command_engine,
+        environment.clone(),
+        template_selector,
+    );
 
     if args.len() > 2 {
         let command = args[1].as_str();
@@ -43,5 +57,8 @@ fn main() -> Result<(), DomainError> {
         }
     }
 
-    unimplemented!("Unknown command")
+    let command = OpenCommand { path: None };
+    thop_service.open(command)?;
+
+    Ok(())
 }

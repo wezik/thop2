@@ -4,15 +4,14 @@ pub mod inbound {}
 pub mod domain {
 
     pub mod environment;
+    pub mod error;
+    pub mod selector;
 
     pub mod thop_service;
 
     pub mod template;
     pub mod template_repository;
-    pub mod template_selector;
     pub mod template_service;
-
-    pub mod error;
 }
 
 pub mod outbound {

@@ -11,7 +11,7 @@ struct Template {
 }
 
 fn main() {
-    let mut file = File::open("template/template.yaml").expect("Failed to open template file");
+    let mut file = File::open("resources/template.yaml").expect("Failed to open template file");
     let mut contents = String::new();
     file.read_to_string(&mut contents).expect("Failed to read template file");
 

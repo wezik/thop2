@@ -14,4 +14,9 @@ fn main() {
             Err(e) => println!("Error: {}", e),
         }
     }
+
+    println!("Templates:");
+    for t in service.list() {
+        println!("{:?}", t);
+    }
 }

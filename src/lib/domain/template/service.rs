@@ -14,4 +14,8 @@ impl Service {
     pub fn get(&self, path: Path) -> Result<Template, DomainError>{
         self.repository.find(path)
     }
+
+    pub fn list(&self) -> Vec<Template> {
+        self.repository.list()
+    }
 }

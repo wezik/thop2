@@ -35,4 +35,8 @@ impl TemplateRepository for RamTemplateRepository {
             None => Err(TEMPLATE_NOT_FOUND.with_attr("path", path.0)),
         }
     }
+
+    fn list(&self) -> Vec<Template> {
+        self.templates.values().cloned().collect()
+    }
 }

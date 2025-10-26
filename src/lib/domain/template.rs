@@ -8,6 +8,17 @@ pub struct Template {
     pub commands: Commands,
 }
 
+impl Template {
+    pub fn new(path: Path, name: Name, engine: Engine) -> Template {
+        Template {
+            path: path,
+            name: name,
+            engine: engine,
+            commands: Commands(vec![]),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Path(pub String);
 

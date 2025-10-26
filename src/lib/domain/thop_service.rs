@@ -1,8 +1,16 @@
 use std::sync::Arc;
 
-use crate::domain::template_service::TemplateService;
+use mockall::automock;
+
+use crate::domain::template_service::TemplateServicePort;
 use crate::domain::{environment::Environment, error::DomainError, selector::Selector, template};
-use crate::engines::command_engine::inbound::command_engine::CommandEngine;
+use crate::engines::command_engine::inbound::command_engine::CommandEnginePort;
+
+#[automock]
+pub trait ThopServicePort {
+    fn create(&self, command: CreateCommand) -> Result<(), DomainError>;
+    fn open(&self, command: OpenCommand) -> Result<(), DomainError>;
+}
 
 pub struct CreateCommand {
     pub name: Option<template::Name>,
@@ -22,16 +30,16 @@ pub struct OpenCommand {
 }
 
 pub struct ThopService {
-    pub template_service: TemplateService,
-    pub command_engine: CommandEngine,
+    pub template_service: Arc<dyn TemplateServicePort>,
+    pub command_engine: Arc<dyn CommandEnginePort>,
     pub environment: Arc<dyn Environment>,
     pub selector: Arc<dyn Selector>,
 }
 
 impl ThopService {
     pub fn new(
-        template_service: TemplateService,
-        command_engine: CommandEngine,
+        template_service: Arc<dyn TemplateServicePort>,
+        command_engine: Arc<dyn CommandEnginePort>,
         environment: Arc<dyn Environment>,
         template_selector: Arc<dyn Selector>,
     ) -> ThopService {
@@ -42,8 +50,10 @@ impl ThopService {
             selector: template_selector,
         }
     }
+}
 
-    pub fn create(&mut self, command: CreateCommand) -> Result<(), DomainError> {
+impl ThopServicePort for ThopService {
+    fn create(&self, command: CreateCommand) -> Result<(), DomainError> {
         let path = match command.path {
             Some(path) => path,
             None => template::Path(self.environment.current_dir()?),
@@ -54,20 +64,15 @@ impl ThopService {
             None => template::Name(path.0.clone()),
         };
 
-        let template = template::Template {
-            path: path,
-            name: name,
-            engine: template::Engine::Command,
-            commands: template::Commands(vec![]),
-        };
+        let template = template::Template::new(path, name, template::Engine::Command);
 
         self.template_service.create(template)?;
         Ok(())
     }
 
-    pub fn open(&self, command: OpenCommand) -> Result<(), DomainError> {
-        let path = match command.path {
-            Some(path) => path.clone(),
+    fn open(&self, command: OpenCommand) -> Result<(), DomainError> {
+        let template = match command.path {
+            Some(path) => self.template_service.get(path)?,
             None => {
                 let templates = self.template_service.list();
 
@@ -81,18 +86,16 @@ impl ThopService {
                     None => return Ok(()),
                 };
 
-                let template = templates
+                templates
                     .iter()
                     .find(|template| template.name.0 == selected_name)
                     .ok_or_else(|| {
                         template::TEMPLATE_NOT_FOUND.with_attr("name", selected_name.to_string())
-                    })?;
-
-                template.path.clone()
+                    })?
+                    .to_owned()
             }
         };
 
-        let template = self.template_service.get(path)?;
         match template.engine {
             template::Engine::Command => self.command_engine.process(template)?,
         }

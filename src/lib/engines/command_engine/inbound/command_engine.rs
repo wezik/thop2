@@ -1,9 +1,16 @@
+use mockall::automock;
+
 use crate::{
     domain::{error::DomainError, template::Template},
     engines::command_engine::domain::{
         command_service::CommandService, command_template::CommandTemplate,
     },
 };
+
+#[automock]
+pub trait CommandEnginePort {
+    fn process(&self, template: Template) -> Result<(), DomainError>;
+}
 
 pub struct CommandEngine {
     pub command_service: CommandService,
@@ -15,8 +22,10 @@ impl CommandEngine {
             command_service: command_service,
         }
     }
+}
 
-    pub fn process(&self, template: Template) -> Result<(), DomainError> {
+impl CommandEnginePort for CommandEngine {
+    fn process(&self, template: Template) -> Result<(), DomainError> {
         let command_template = CommandTemplate {
             commands: template.commands,
         };

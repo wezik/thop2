@@ -1,4 +1,6 @@
-pub mod domain {
-    pub mod template_fixtures;
-    pub mod template_service_spec;
+mod domain {
+    mod template_fixtures;
+    mod template_service_spec;
+
+    mod thop_service_spec;
 }

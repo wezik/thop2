@@ -5,7 +5,7 @@ use crab_hop::{
         error::DomainError,
         template,
         template_service::TemplateService,
-        thop_service::{CreateCommand, OpenCommand, ThopService},
+        thop_service::{CreateCommand, OpenCommand, ThopService, ThopServicePort},
     },
     engines::command_engine::{
         domain::command_service::CommandService, inbound::command_engine::CommandEngine,
@@ -20,14 +20,14 @@ use crab_hop::{
 fn main() -> Result<(), DomainError> {
     let args: Vec<String> = std::env::args().collect();
 
-    let command_engine = CommandEngine::new(CommandService::new());
+    let command_engine = Arc::new(CommandEngine::new(CommandService::new()));
     let environment = Arc::new(SystemEnvironment::new());
     let template_selector = Arc::new(FzfSelector::new(environment.clone()));
 
     let template_repository = Arc::new(Mutex::new(RamTemplateRepository::new()));
-    let template_service = TemplateService::new(template_repository.clone());
+    let template_service = Arc::new(TemplateService::new(template_repository.clone()));
 
-    let mut thop_service = ThopService::new(
+    let thop_service = ThopService::new(
         template_service,
         command_engine,
         environment.clone(),

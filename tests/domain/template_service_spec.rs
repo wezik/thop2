@@ -1,13 +1,35 @@
 use std::sync::{Arc, Mutex};
 
 use crab_hop::domain::{
-    template_repository::MockTemplateRepository, template_service::TemplateService,
+    template_repository::MockTemplateRepository,
+    template_service::{TemplateService, TemplateServicePort},
 };
 
 use crate::domain::template_fixtures::some_template;
 
-fn repository() -> Arc<Mutex<MockTemplateRepository>> {
+fn mock_repository() -> Arc<Mutex<MockTemplateRepository>> {
     Arc::new(Mutex::new(MockTemplateRepository::new()))
+}
+
+#[test]
+fn creates_template() {
+    // given
+    let template = some_template();
+
+    let repository = mock_repository();
+    repository
+        .lock()
+        .unwrap()
+        .expect_create()
+        .return_const(Ok(()));
+
+    let service = TemplateService::new(repository.clone());
+
+    // when
+    let result = service.create(template.clone());
+
+    // then
+    assert_eq!(result.unwrap(), ());
 }
 
 #[test]
@@ -15,7 +37,7 @@ fn gets_template() {
     // given
     let template = some_template();
 
-    let repository = repository();
+    let repository = mock_repository();
     repository
         .lock()
         .unwrap()
@@ -36,7 +58,7 @@ fn lists_templates() {
     // given
     let templates = vec![some_template(), some_template()];
 
-    let repository = repository();
+    let repository = mock_repository();
     repository
         .lock()
         .unwrap()

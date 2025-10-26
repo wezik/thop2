@@ -29,8 +29,8 @@ impl TemplateRepository for RamTemplateRepository {
         }
     }
 
-    fn list(&self) -> Vec<Template> {
-        self.templates.values().cloned().collect()
+    fn list(&self) -> Result<Vec<Template>, DomainError> {
+        Ok(self.templates.values().cloned().collect())
     }
 }
 

@@ -45,3 +45,7 @@ impl fmt::Display for DomainError {
 }
 
 impl Error for DomainError {}
+
+// Some generic errors
+pub const POISONED_LOCK_ERROR: DomainErrorTemplate =
+    new("POISONED_LOCK_ERROR", "poisoned lock error");

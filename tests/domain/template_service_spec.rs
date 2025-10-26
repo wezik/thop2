@@ -63,7 +63,7 @@ fn lists_templates() {
         .lock()
         .unwrap()
         .expect_list()
-        .return_const(templates.clone());
+        .return_const(Ok(templates.clone()));
 
     let service = TemplateService::new(repository);
 
@@ -71,5 +71,6 @@ fn lists_templates() {
     let result = service.list();
 
     // then
-    assert_eq!(result, templates);
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), templates);
 }

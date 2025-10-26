@@ -74,7 +74,7 @@ impl ThopServicePort for ThopService {
         let template = match command.path {
             Some(path) => self.template_service.get(path)?,
             None => {
-                let templates = self.template_service.list();
+                let templates = self.template_service.list()?;
 
                 let names = templates
                     .iter()

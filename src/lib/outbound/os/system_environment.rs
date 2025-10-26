@@ -18,11 +18,11 @@ impl SystemEnvironment {
 
 impl Environment for SystemEnvironment {
     fn current_dir(&self) -> Result<String, DomainError> {
-        let result = std::env::current_dir();
-        match result {
-            Ok(path) => Ok(path.to_str().unwrap().to_string()),
-            Err(e) => Err(ENVIRONMENT_READ_ERROR.with_attr("error", e.to_string())),
-        }
+        std::env::current_dir()
+            .map_err(|e| ENVIRONMENT_READ_ERROR.with_attr("error", e.to_string()))?
+            .to_str()
+            .map(|s| s.to_string())
+            .ok_or_else(|| ENVIRONMENT_READ_ERROR.with_attr("error", "path is not valid UTF-8"))
     }
 
     fn run_command<'a>(
@@ -39,11 +39,14 @@ impl Environment for SystemEnvironment {
             .map_err(|e| ENVIRONMENT_RUN_COMMAND_ERROR.with_attr("error", e.to_string()))?;
 
         if let Some(input) = input {
-            if let Some(mut stdin) = child.stdin.take() {
-                stdin
-                    .write_all(input.as_bytes())
-                    .map_err(|e| ENVIRONMENT_RUN_COMMAND_ERROR.with_attr("error", e.to_string()))?;
-            }
+            child
+                .stdin
+                .as_mut()
+                .ok_or_else(|| {
+                    ENVIRONMENT_RUN_COMMAND_ERROR.with_attr("error", "Failed to open stdin")
+                })?
+                .write_all(input.as_bytes())
+                .map_err(|e| ENVIRONMENT_RUN_COMMAND_ERROR.with_attr("error", e.to_string()))?;
         }
 
         let output = child
@@ -51,11 +54,11 @@ impl Environment for SystemEnvironment {
             .map_err(|e| ENVIRONMENT_RUN_COMMAND_ERROR.with_attr("error", e.to_string()))?;
 
         if !output.status.success() {
-            return Ok(RunResult::Failure(output.status.code().unwrap_or(-1)));
+            let code = output.status.code().unwrap_or(-1);
+            return Ok(RunResult::Failure(code));
         }
 
-        Ok(RunResult::Success(
-            String::from_utf8_lossy(&output.stdout).to_string(),
-        ))
+        let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+        Ok(RunResult::Success(stdout))
     }
 }

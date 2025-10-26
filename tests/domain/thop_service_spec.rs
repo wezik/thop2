@@ -157,7 +157,7 @@ fn opens_selected_template() {
     let mut template_service = MockTemplateServicePort::new();
     template_service
         .expect_list()
-        .return_const(templates.clone());
+        .return_const(Ok(templates.clone()));
 
     let environment = MockEnvironment::new();
     let mut selector = MockSelector::new();

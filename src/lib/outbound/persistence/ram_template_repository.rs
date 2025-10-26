@@ -42,6 +42,10 @@ impl RamTemplateRepository {
             .collect();
         RamTemplateRepository { templates: map }
     }
+
+    pub fn clear(&mut self) {
+        self.templates.clear();
+    }
 }
 
 fn preload_templates() -> Vec<Template> {

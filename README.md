@@ -27,21 +27,28 @@ Light and quick to use way of managing multiplexer sessions
 This project follows [Semantic Versioning](https://semver.org/), but currently it's at version v0 as it's in development.
 Destination is set but things can still change and break backwards compatibility; That includes templates they are not getting migrations until v1.
 
-### TODO's:
-- CLI library evaluation and integration
-- Template removal
-- Template editing
-- Template killing
-- Storing templates in file system
-- Integration tests
-- Architecture tests
-- Running tests in pipelines
-- Sonar coverage reports
-- Release workflow
-- Tmux engine integration
-- Template migrations
+### TODO's for V1:
+- [ ] CLI library evaluation and integration
+- [x] Minimum viable template definition
+- [ ] V1 ready template definition
+- [x] Template creation
+- [x] Template opening
+- [ ] Template removing
+- [ ] Template editing
+- [ ] Template killing
+- [ ] Storing templates in file system
+- [x] Setup architecture
+- [x] Unit tests setup
+- [ ] Integration tests setup
+- [ ] Architecture tests
+- [ ] Running tests in pipelines
+- [ ] Sonar coverage reports
+- [ ] Release workflow
+- [ ] Install script
+- [ ] Tmux engine integration
+- [ ] Template migrations
 
-### Ideas:
+### Post V1 Ideas:
 - Generic config file
 - Zellij engine integration
 - Video showcase in README

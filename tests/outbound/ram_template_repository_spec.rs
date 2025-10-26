@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crab_hop::{
     domain::{
-        template::{self, Engine, Template, TEMPLATE_ALREADY_EXSISTS},
+        template::{self, Engine, Template, TEMPLATE_ALREADY_EXSISTS, TEMPLATE_NOT_FOUND},
         template_repository::TemplateRepository,
     },
     outbound::persistence::ram_template_repository::RamTemplateRepository,
@@ -12,6 +12,24 @@ fn repository() -> RamTemplateRepository {
     let mut repository = RamTemplateRepository::new();
     repository.clear();
     repository
+}
+
+#[test]
+fn find_errors_on_non_existing_templates() {
+    // given
+    let template = Template::new(
+        template::Path("~/some/path".to_string()),
+        template::Name("SomeName".to_string()),
+        Engine::Command,
+    );
+    let repository = repository();
+
+    // when
+    let result = repository.find(template.path);
+
+    // then
+    let err = result.expect_err("expected error");
+    assert_eq!(err.code, TEMPLATE_NOT_FOUND.code);
 }
 
 #[test]

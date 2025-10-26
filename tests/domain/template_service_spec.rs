@@ -7,23 +7,15 @@ use crab_hop::domain::{
 
 use crate::domain::template_fixtures::some_template;
 
-fn mock_repository() -> Arc<Mutex<MockTemplateRepository>> {
-    Arc::new(Mutex::new(MockTemplateRepository::new()))
-}
-
 #[test]
 fn creates_template() {
     // given
     let template = some_template();
 
-    let repository = mock_repository();
-    repository
-        .lock()
-        .unwrap()
-        .expect_create()
-        .return_const(Ok(()));
+    let mut repository = MockTemplateRepository::new();
+    repository.expect_create().return_const(Ok(()));
 
-    let service = TemplateService::new(repository.clone());
+    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
 
     // when
     let result = service.create(template.clone());
@@ -37,14 +29,12 @@ fn gets_template() {
     // given
     let expected_template = some_template();
 
-    let repository = mock_repository();
+    let mut repository = MockTemplateRepository::new();
     repository
-        .lock()
-        .unwrap()
         .expect_find()
         .return_const(Ok(expected_template.clone()));
 
-    let service = TemplateService::new(repository.clone());
+    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
 
     // when
     let result = service.get(expected_template.path.clone());
@@ -59,14 +49,10 @@ fn lists_templates() {
     // given
     let templates = vec![some_template(), some_template()];
 
-    let repository = mock_repository();
-    repository
-        .lock()
-        .unwrap()
-        .expect_list()
-        .return_const(Ok(templates.clone()));
+    let mut repository = MockTemplateRepository::new();
+    repository.expect_list().return_const(Ok(templates.clone()));
 
-    let service = TemplateService::new(repository);
+    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
 
     // when
     let result = service.list();
@@ -74,4 +60,21 @@ fn lists_templates() {
     // then
     let list = result.expect("expected result to be ok");
     assert_eq!(list, templates);
+}
+
+#[test]
+fn deletes_template() {
+    // given
+    let expected_template = some_template();
+
+    let mut repository = MockTemplateRepository::new();
+    repository.expect_delete().return_const(Ok(()));
+
+    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+
+    // when
+    let result = service.delete(expected_template.path.clone());
+
+    // then
+    assert!(result.is_ok());
 }

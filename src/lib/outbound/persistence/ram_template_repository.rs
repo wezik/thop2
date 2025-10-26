@@ -22,6 +22,13 @@ impl TemplateRepository for RamTemplateRepository {
         Ok(())
     }
 
+    fn delete(&mut self, path: Path) -> Result<(), DomainError> {
+        match self.templates.remove(&path) {
+            Some(_) => Ok(()),
+            None => Err(TEMPLATE_NOT_FOUND.with_attr("path", path.0)),
+        }
+    }
+
     fn find(&self, path: Path) -> Result<Template, DomainError> {
         match self.templates.get(&path) {
             Some(t) => Ok(t.clone()),

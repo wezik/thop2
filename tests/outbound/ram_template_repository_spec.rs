@@ -99,3 +99,41 @@ fn lists_templates() {
         HashSet::from_iter(templates)
     );
 }
+
+#[test]
+fn delete_errors_on_non_existing_templates() {
+    // given
+    let template = Template::new(
+        template::Path("~/some/path".to_string()),
+        template::Name("SomeName".to_string()),
+        Engine::Command,
+    );
+    let mut repository = repository();
+
+    // when
+    let result = repository.delete(template.path);
+
+    // then
+    let err = result.expect_err("expected error");
+    assert_eq!(err.code, TEMPLATE_NOT_FOUND.code);
+}
+
+#[test]
+fn deletes_templates() {
+    // given
+    let template = Template::new(
+        template::Path("~/some/path".to_string()),
+        template::Name("SomeName".to_string()),
+        Engine::Command,
+    );
+    let mut repository = repository();
+    repository
+        .create(template.clone())
+        .expect("expected template to be created");
+
+    // when
+    let result = repository.delete(template.path);
+
+    // then
+    assert!(result.is_ok());
+}

@@ -9,6 +9,7 @@ use crate::engines::command_engine::inbound::command_engine::CommandEnginePort;
 #[automock]
 pub trait ThopServicePort {
     fn create(&self, command: CreateCommand) -> Result<(), DomainError>;
+    fn delete(&self, command: DeleteCommand) -> Result<(), DomainError>;
     fn open(&self, command: OpenCommand) -> Result<(), DomainError>;
 }
 
@@ -16,10 +17,10 @@ pub struct CreateCommand {
     pub name: Option<template::Name>,
     pub path: Option<template::Path>,
 }
-//
-// pub struct DeleteCommand {
-//     pub name: Option<template::Name>,
-// }
+
+pub struct DeleteCommand {
+    pub path: Option<template::Path>,
+}
 //
 // pub struct KillCommand {
 //     pub name: Option<template::Name>,
@@ -68,6 +69,35 @@ impl ThopServicePort for ThopService {
 
         self.template_service.create(template)?;
         Ok(())
+    }
+
+    fn delete(&self, command: DeleteCommand) -> Result<(), DomainError> {
+        if let Some(path) = command.path {
+            self.template_service.delete(path)?;
+            return Ok(());
+        }
+        let templates = self.template_service.list()?;
+
+        let names = templates
+            .iter()
+            .map(|template| template.name.0.as_str())
+            .collect::<Vec<&str>>();
+
+        let selected_name = match self.selector.select_from(&names)? {
+            Some(name) => name,
+            None => return Ok(()),
+        };
+
+        let template = templates
+            .iter()
+            .find(|template| template.name.0 == selected_name)
+            .ok_or_else(|| {
+                template::TEMPLATE_NOT_FOUND.with_attr("name", selected_name.to_string())
+            })?
+            .to_owned();
+
+        self.template_service.delete(template.path)?;
+        return Ok(());
     }
 
     fn open(&self, command: OpenCommand) -> Result<(), DomainError> {

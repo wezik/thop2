@@ -5,7 +5,7 @@ use crab_hop::{
         error::DomainError,
         template,
         template_service::TemplateService,
-        thop_service::{CreateCommand, OpenCommand, ThopService, ThopServicePort},
+        thop_service::{CreateCommand, DeleteCommand, OpenCommand, ThopService, ThopServicePort},
     },
     engines::command_engine::{
         domain::command_service::CommandService, inbound::command_engine::CommandEngine,
@@ -34,7 +34,7 @@ fn main() -> Result<(), DomainError> {
         template_selector,
     );
 
-    if args.len() > 2 {
+    if args.len() > 1 {
         let command = args[1].as_str();
         match command {
             "create" => {
@@ -52,6 +52,11 @@ fn main() -> Result<(), DomainError> {
                     path: Some(template::Path(path)),
                 };
                 return thop_service.open(command);
+            }
+            "delete" => {
+                let command = DeleteCommand { path: None };
+
+                return thop_service.delete(command);
             }
             _ => unimplemented!("Unknown command"),
         }

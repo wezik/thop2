@@ -6,7 +6,7 @@ use crab_hop::{
         selector::MockSelector,
         template::{self, Template},
         template_service::MockTemplateServicePort,
-        thop_service::{CreateCommand, OpenCommand, ThopService, ThopServicePort},
+        thop_service::{CreateCommand, DeleteCommand, OpenCommand, ThopService, ThopServicePort},
     },
     engines::command_engine::inbound::command_engine::MockCommandEnginePort,
 };
@@ -227,6 +227,144 @@ fn skips_opening_if_selection_is_none() {
 
     // when
     let result = service.open(command);
+
+    // then
+    assert!(result.is_ok());
+}
+
+#[test]
+fn deletes_selected_template() {
+    // given
+    let some_path = template::Path("~/some/path".to_string());
+    let some_name = template::Name("SomeName".to_string());
+
+    let command = DeleteCommand { path: None };
+
+    let templates = vec![
+        Template::new(
+            some_path.clone(),
+            some_name.clone(),
+            template::Engine::Command,
+        ),
+        Template::new(
+            template::Path("~/some/other/path".to_string()),
+            template::Name("SomeOtherName".to_string()),
+            template::Engine::Command,
+        ),
+    ];
+
+    let mut template_service = MockTemplateServicePort::new();
+    template_service
+        .expect_list()
+        .return_const(Ok(templates.clone()));
+    template_service
+        .expect_delete()
+        .withf(move |p| p == &some_path)
+        .return_const(Ok(()));
+
+    let environment = MockEnvironment::new();
+
+    let mut selector = MockSelector::new();
+    selector
+        .expect_select_from()
+        .return_const(Ok(Some(some_name.0.clone())));
+
+    let command_engine = MockCommandEnginePort::new();
+
+    let service = ThopService::new(
+        Arc::new(template_service),
+        Arc::new(command_engine),
+        Arc::new(environment),
+        Arc::new(selector),
+    );
+
+    // when
+    let result = service.delete(command);
+
+    // then
+    assert!(result.is_ok());
+}
+
+#[test]
+fn deletes_exact_template() {
+    // given
+    let some_path = template::Path("~/some/path".to_string());
+
+    let command = DeleteCommand {
+        path: Some(some_path.clone()),
+    };
+
+    let mut template_service = MockTemplateServicePort::new();
+    template_service
+        .expect_delete()
+        .withf(move |p| p == &some_path)
+        .return_const(Ok(()));
+
+    let environment = MockEnvironment::new();
+
+    let selector = MockSelector::new();
+    let command_engine = MockCommandEnginePort::new();
+
+    let service = ThopService::new(
+        Arc::new(template_service),
+        Arc::new(command_engine),
+        Arc::new(environment),
+        Arc::new(selector),
+    );
+
+    // when
+    let result = service.delete(command);
+
+    // then
+    assert!(result.is_ok());
+}
+
+#[test]
+fn skips_deleting_if_selection_is_none() {
+    // given
+    let some_path = template::Path("~/some/path".to_string());
+    let some_name = template::Name("SomeName".to_string());
+
+    let command = DeleteCommand { path: None };
+
+    let templates = vec![
+        Template::new(
+            some_path.clone(),
+            some_name.clone(),
+            template::Engine::Command,
+        ),
+        Template::new(
+            template::Path("~/some/other/path".to_string()),
+            template::Name("SomeOtherName".to_string()),
+            template::Engine::Command,
+        ),
+    ];
+
+    let mut template_service = MockTemplateServicePort::new();
+    template_service
+        .expect_list()
+        .return_const(Ok(templates.clone()));
+    template_service
+        .expect_delete()
+        .withf(move |p| p == &some_path)
+        .return_const(Ok(()));
+
+    let environment = MockEnvironment::new();
+
+    let mut selector = MockSelector::new();
+    selector.expect_select_from().return_const(Ok(None));
+
+    let command_engine = MockCommandEnginePort::new();
+
+    let service = ThopService::new(
+        Arc::new(template_service),
+        Arc::new(command_engine),
+        Arc::new(environment),
+        Arc::new(selector),
+    );
+
+    // when
+    let result = service.delete(command);
 
     // then
     assert!(result.is_ok());

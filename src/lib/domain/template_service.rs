@@ -9,6 +9,7 @@ use crate::domain::template_repository::TemplateRepository;
 #[automock]
 pub trait TemplateServicePort {
     fn create(&self, template: Template) -> Result<(), DomainError>;
+    fn delete(&self, path: Path) -> Result<(), DomainError>;
     fn get(&self, path: Path) -> Result<Template, DomainError>;
     fn list(&self) -> Result<Vec<Template>, DomainError>;
 }
@@ -32,6 +33,14 @@ impl TemplateServicePort for TemplateService {
             Err(err) => return Err(POISONED_LOCK_ERROR.with_attr("error", err.to_string())),
         };
         repo.create(template)
+    }
+
+    fn delete(&self, path: Path) -> Result<(), DomainError> {
+        let mut repo = match self.repository.lock() {
+            Ok(repo) => repo,
+            Err(err) => return Err(POISONED_LOCK_ERROR.with_attr("error", err.to_string())),
+        };
+        repo.delete(path)
     }
 
     fn get(&self, path: Path) -> Result<Template, DomainError> {

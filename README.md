@@ -33,7 +33,7 @@ Destination is set but things can still change and break backwards compatibility
 - [ ] V1 ready template definition
 - [x] Template creation
 - [x] Template opening
-- [ ] Template removing
+- [x] Template removing
 - [ ] Template editing
 - [ ] Template killing
 - [ ] Storing templates in file system

@@ -185,3 +185,49 @@ fn opens_selected_template() {
     // then
     assert!(result.is_ok());
 }
+
+#[test]
+fn skips_opening_if_selection_is_none() {
+    // given
+    let path = template::Path("~/some/path".to_string());
+    let name = template::Name("SomeName".to_string());
+    let template = Template::new(path.clone(), name.clone(), template::Engine::Command);
+
+    let templates = vec![
+        template.clone(),
+        Template::new(
+            template::Path("~/some/other/path".to_string()),
+            template::Name("SomeOtherName".to_string()),
+            template::Engine::Command,
+        ),
+    ];
+
+    let command = OpenCommand { path: None };
+
+    let mut template_service = MockTemplateServicePort::new();
+    template_service
+        .expect_list()
+        .return_const(Ok(templates.clone()));
+
+    let environment = MockEnvironment::new();
+    let mut selector = MockSelector::new();
+    selector
+        .expect_select_from()
+        .withf(move |t| t == vec![&name.0.clone(), &"SomeOtherName".to_string()])
+        .return_const(Ok(None));
+
+    let command_engine = MockCommandEnginePort::new();
+
+    let service = ThopService::new(
+        Arc::new(template_service),
+        Arc::new(command_engine),
+        Arc::new(environment),
+        Arc::new(selector),
+    );
+
+    // when
+    let result = service.open(command);
+
+    // then
+    assert!(result.is_ok());
+}

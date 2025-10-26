@@ -47,8 +47,8 @@ fn prevents_creating_duplicate_templates() {
     let result = repository.create(template.clone());
 
     // then
-    assert!(result.is_err());
-    assert_eq!(result.unwrap_err().code, TEMPLATE_ALREADY_EXSISTS.code);
+    let err = result.expect_err("expected error");
+    assert_eq!(err.code, TEMPLATE_ALREADY_EXSISTS.code);
 }
 
 #[test]
@@ -75,8 +75,9 @@ fn lists_templates() {
     let result = repository.list();
 
     // then
+    let list = result.expect("expected result to be ok");
     assert_eq!(
-        HashSet::<Template>::from_iter(result.unwrap()),
+        HashSet::<Template>::from_iter(list),
         HashSet::from_iter(templates)
     );
 }

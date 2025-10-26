@@ -5,5 +5,6 @@ mod domain {
 }
 
 mod outbound {
+    mod fzf_selector_spec;
     mod ram_template_repository_spec;
 }

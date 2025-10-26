@@ -2,6 +2,7 @@ use mockall::automock;
 
 use crate::domain::error::{self, DomainError, DomainErrorTemplate};
 
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum RunResult {
     Success(String),
     Failure(i32),

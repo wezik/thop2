@@ -78,12 +78,12 @@ fn creates_template() {
         let selector = MockSelector::new();
         let command_engine = MockCommandEnginePort::new();
 
-        let service = ThopService {
-            template_service: Arc::new(template_service),
-            environment: Arc::new(environment),
-            selector: Arc::new(selector),
-            command_engine: Arc::new(command_engine),
-        };
+        let service = ThopService::new(
+            Arc::new(template_service),
+            Arc::new(command_engine),
+            Arc::new(environment),
+            Arc::new(selector),
+        );
 
         // when
         let result = service.create(command);
@@ -122,12 +122,12 @@ fn opens_exact_template() {
         .withf(move |t| *t == template.clone())
         .return_const(Ok(()));
 
-    let service = ThopService {
-        template_service: Arc::new(template_service),
-        environment: Arc::new(environment),
-        selector: Arc::new(selector),
-        command_engine: Arc::new(command_engine),
-    };
+    let service = ThopService::new(
+        Arc::new(template_service),
+        Arc::new(command_engine),
+        Arc::new(environment),
+        Arc::new(selector),
+    );
 
     // when
     let result = service.open(command);
@@ -172,12 +172,12 @@ fn opens_selected_template() {
         .withf(move |t| *t == template.clone())
         .return_const(Ok(()));
 
-    let service = ThopService {
-        template_service: Arc::new(template_service),
-        environment: Arc::new(environment),
-        selector: Arc::new(selector),
-        command_engine: Arc::new(command_engine),
-    };
+    let service = ThopService::new(
+        Arc::new(template_service),
+        Arc::new(command_engine),
+        Arc::new(environment),
+        Arc::new(selector),
+    );
 
     // when
     let result = service.open(command);

@@ -29,28 +29,29 @@ fn creates_template() {
     let result = service.create(template.clone());
 
     // then
-    assert_eq!(result.unwrap(), ());
+    assert!(result.is_ok());
 }
 
 #[test]
 fn gets_template() {
     // given
-    let template = some_template();
+    let expected_template = some_template();
 
     let repository = mock_repository();
     repository
         .lock()
         .unwrap()
         .expect_find()
-        .return_const(Ok(template.clone()));
+        .return_const(Ok(expected_template.clone()));
 
     let service = TemplateService::new(repository.clone());
 
     // when
-    let result = service.get(template.path.clone());
+    let result = service.get(expected_template.path.clone());
 
     // then
-    assert_eq!(result.unwrap(), template);
+    let template = result.expect("expected result to be ok");
+    assert_eq!(template, expected_template);
 }
 
 #[test]
@@ -71,6 +72,6 @@ fn lists_templates() {
     let result = service.list();
 
     // then
-    assert!(result.is_ok());
-    assert_eq!(result.unwrap(), templates);
+    let list = result.expect("expected result to be ok");
+    assert_eq!(list, templates);
 }

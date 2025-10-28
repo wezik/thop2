@@ -39,7 +39,7 @@ Destination is set but things can still change and break backwards compatibility
 - [ ] Storing templates in file system
 - [x] Setup architecture
 - [x] Unit tests setup
-- [ ] Integration tests setup
+- [x] Integration tests setup
 - [ ] Architecture tests
 - [x] Rust CI setup
 - [ ] Sonar coverage reports

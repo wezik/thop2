@@ -13,19 +13,23 @@ pub trait ThopServicePort {
     fn open(&self, command: OpenCommand) -> Result<(), DomainError>;
 }
 
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct CreateCommand {
     pub name: Option<template::Name>,
     pub path: Option<template::Path>,
 }
 
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct DeleteCommand {
     pub path: Option<template::Path>,
 }
 //
+// #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 // pub struct KillCommand {
 //     pub name: Option<template::Name>,
 // }
 
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct OpenCommand {
     pub path: Option<template::Path>,
 }

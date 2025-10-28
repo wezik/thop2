@@ -1,3 +1,7 @@
+mod integration {
+    mod thop_create_integration_spec;
+}
+
 mod domain {
     mod template_fixtures;
     mod template_service_spec;

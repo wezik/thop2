@@ -12,7 +12,7 @@ use crab_hop::{
 
 use crate::clap::{Clap, ClapCommands};
 
-pub mod clap;
+mod clap;
 
 struct Cli {
     thop: Arc<dyn ThopServicePort>,

@@ -41,9 +41,9 @@ Destination is set but things can still change and break backwards compatibility
 - [x] Unit tests setup
 - [ ] Integration tests setup
 - [ ] Architecture tests
-- [ ] Running tests in pipelines
+- [x] Rust CI setup
 - [ ] Sonar coverage reports
-- [ ] Release workflow
+- [ ] Release model
 - [ ] Install script
 - [ ] Tmux engine integration
 - [ ] Template migrations

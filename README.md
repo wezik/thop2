@@ -28,7 +28,7 @@ This project follows [Semantic Versioning](https://semver.org/), but currently i
 Destination is set but things can still change and break backwards compatibility; That includes templates they are not getting migrations until v1.
 
 ### TODO's for V1:
-- [ ] CLI library evaluation and integration
+- [x] CLI library evaluation and integration (Clap)
 - [x] Minimum viable template definition
 - [ ] V1 ready template definition
 - [x] Template creation

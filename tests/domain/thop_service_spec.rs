@@ -8,7 +8,7 @@ use crab_hop::{
         template_service::MockTemplateServicePort,
         thop_service::{CreateCommand, DeleteCommand, OpenCommand, ThopService, ThopServicePort},
     },
-    engines::command_engine::inbound::command_engine::MockCommandEnginePort,
+    engines::command_engine::app::command_engine::MockCommandEnginePort,
 };
 
 #[test]

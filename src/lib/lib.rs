@@ -1,5 +1,7 @@
 // Core "upper" module containing non engine specific code
-pub mod inbound {}
+pub mod app {
+    pub mod wiring;
+}
 
 pub mod domain {
 
@@ -14,7 +16,7 @@ pub mod domain {
     pub mod template_service;
 }
 
-pub mod outbound {
+pub mod infrastructure {
 
     pub mod os {
         pub mod system_environment;

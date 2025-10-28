@@ -4,7 +4,7 @@ mod domain {
     mod thop_service_spec;
 }
 
-mod outbound {
+mod infrastructure {
     mod fzf_selector_spec;
     mod ram_template_repository_spec;
 }

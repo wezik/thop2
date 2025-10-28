@@ -5,7 +5,7 @@ use crab_hop::{
         environment::{MockEnvironment, RunResult, ENVIRONMENT_RUN_COMMAND_ERROR},
         selector::Selector,
     },
-    outbound::selector::fzf_selector::FzfSelector,
+    infrastructure::selector::fzf_selector::FzfSelector,
 };
 
 #[test]

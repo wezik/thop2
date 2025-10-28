@@ -4,7 +4,7 @@ use mockall::automock;
 
 use crate::domain::template_service::TemplateServicePort;
 use crate::domain::{environment::Environment, error::DomainError, selector::Selector, template};
-use crate::engines::command_engine::inbound::command_engine::CommandEnginePort;
+use crate::engines::command_engine::app::command_engine::CommandEnginePort;
 
 #[automock]
 pub trait ThopServicePort {

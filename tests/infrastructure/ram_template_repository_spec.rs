@@ -5,7 +5,7 @@ use crab_hop::{
         template::{self, Engine, Template, TEMPLATE_ALREADY_EXSISTS, TEMPLATE_NOT_FOUND},
         template_repository::TemplateRepository,
     },
-    outbound::persistence::ram_template_repository::RamTemplateRepository,
+    infrastructure::persistence::ram_template_repository::RamTemplateRepository,
 };
 
 fn repository() -> RamTemplateRepository {

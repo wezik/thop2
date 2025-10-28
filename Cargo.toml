@@ -9,7 +9,7 @@ path = "src/lib/lib.rs"
 
 [[bin]]
 name = "cli"
-path = "src/bin/cli/main.rs"
+path = "src/bin/cli/cli.rs"
 
 [dependencies]
 mockall = "0.13.1"

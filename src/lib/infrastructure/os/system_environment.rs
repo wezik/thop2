@@ -61,4 +61,10 @@ impl Environment for SystemEnvironment {
         let stdout = String::from_utf8_lossy(&output.stdout).to_string();
         Ok(RunResult::Success(stdout))
     }
+
+    fn get_config_value(&self, key: &str) -> Result<String, DomainError> {
+        std::env::var(key).map_err(|e| {
+            ENVIRONMENT_READ_ERROR.with_attr("error", e.to_string())
+        })
+    }
 }

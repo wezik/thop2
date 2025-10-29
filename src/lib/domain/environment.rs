@@ -17,6 +17,7 @@ pub trait Environment {
         args: &[&'a str],
         input: Option<&'a str>,
     ) -> Result<RunResult, DomainError>;
+    fn get_config_value(&self, key: &str) -> Result<String, DomainError>;
 }
 
 pub const ENVIRONMENT_READ_ERROR: DomainErrorTemplate =

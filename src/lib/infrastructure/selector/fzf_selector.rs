@@ -4,6 +4,7 @@ use crate::domain::{
     environment::{Environment, RunResult, ENVIRONMENT_RUN_COMMAND_ERROR},
     error::DomainError,
     selector::Selector,
+    template::Template,
 };
 
 pub struct FzfSelector {
@@ -19,6 +20,23 @@ impl FzfSelector {
 }
 
 impl Selector for FzfSelector {
+    fn select_template(&self, templates: &[Template]) -> Result<Option<Template>, DomainError> {
+        let entries = templates
+            .iter()
+            .map(|template| template.name.0.as_str())
+            .collect::<Vec<&str>>();
+        let selection = self.select_from(&entries)?;
+        match selection {
+            Some(selection) => Ok(templates
+                .iter()
+                .find(|template| template.name.0 == selection)
+                .map(|template| template.to_owned())),
+            None => Ok(None),
+        }
+    }
+}
+
+impl FzfSelector {
     fn select_from(&self, entries: &[&str]) -> Result<Option<String>, DomainError> {
         if entries.is_empty() {
             return Ok(None);

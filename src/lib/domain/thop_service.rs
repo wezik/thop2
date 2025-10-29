@@ -46,13 +46,13 @@ impl ThopService {
         template_service: Arc<dyn TemplateServicePort>,
         command_engine: Arc<dyn CommandEnginePort>,
         environment: Arc<dyn Environment>,
-        template_selector: Arc<dyn Selector>,
+        selector: Arc<dyn Selector>,
     ) -> ThopService {
         ThopService {
-            template_service: template_service,
-            command_engine: command_engine,
-            environment: environment,
-            selector: template_selector,
+            template_service,
+            command_engine,
+            environment,
+            selector,
         }
     }
 }
@@ -81,27 +81,11 @@ impl ThopServicePort for ThopService {
             return Ok(());
         }
         let templates = self.template_service.list()?;
-
-        let names = templates
-            .iter()
-            .map(|template| template.name.0.as_str())
-            .collect::<Vec<&str>>();
-
-        let selected_name = match self.selector.select_from(&names)? {
-            Some(name) => name,
-            None => return Ok(()),
-        };
-
-        let template = templates
-            .iter()
-            .find(|template| template.name.0 == selected_name)
-            .ok_or_else(|| {
-                template::TEMPLATE_NOT_FOUND.with_attr("name", selected_name.to_string())
-            })?
-            .to_owned();
-
-        self.template_service.delete(template.path)?;
-        return Ok(());
+        match self.selector.select_template(&templates)? {
+            Some(template) => self.template_service.delete(template.path),
+            // noop if no template is selected
+            None => Ok(()),
+        }
     }
 
     fn open(&self, command: OpenCommand) -> Result<(), DomainError> {
@@ -109,31 +93,16 @@ impl ThopServicePort for ThopService {
             Some(path) => self.template_service.get(path)?,
             None => {
                 let templates = self.template_service.list()?;
-
-                let names = templates
-                    .iter()
-                    .map(|template| template.name.0.as_str())
-                    .collect::<Vec<&str>>();
-
-                let selected_name = match self.selector.select_from(&names)? {
-                    Some(name) => name,
+                match self.selector.select_template(&templates)? {
+                    Some(template) => template.to_owned(),
+                    // noop if no template is selected
                     None => return Ok(()),
-                };
-
-                templates
-                    .iter()
-                    .find(|template| template.name.0 == selected_name)
-                    .ok_or_else(|| {
-                        template::TEMPLATE_NOT_FOUND.with_attr("name", selected_name.to_string())
-                    })?
-                    .to_owned()
+                }
             }
         };
 
         match template.engine {
-            template::Engine::Command => self.command_engine.process(template)?,
+            template::Engine::Command => self.command_engine.process(template),
         }
-
-        Ok(())
     }
 }

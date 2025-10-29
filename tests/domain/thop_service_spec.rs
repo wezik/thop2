@@ -162,9 +162,9 @@ fn opens_selected_template() {
     let environment = MockEnvironment::new();
     let mut selector = MockSelector::new();
     selector
-        .expect_select_from()
-        .withf(move |t| t == vec![&name.0.clone(), &"SomeOtherName".to_string()])
-        .return_const(Ok(Some(template.name.0.clone())));
+        .expect_select_template()
+        .withf(move |t| t == templates.clone())
+        .return_const(Ok(Some(template.clone())));
 
     let mut command_engine = MockCommandEnginePort::new();
     command_engine
@@ -212,8 +212,8 @@ fn skips_opening_if_selection_is_none() {
     let environment = MockEnvironment::new();
     let mut selector = MockSelector::new();
     selector
-        .expect_select_from()
-        .withf(move |t| t == vec![&name.0.clone(), &"SomeOtherName".to_string()])
+        .expect_select_template()
+        .withf(move |t| t == templates.clone())
         .return_const(Ok(None));
 
     let command_engine = MockCommandEnginePort::new();
@@ -239,13 +239,14 @@ fn deletes_selected_template() {
     let some_name = template::Name("SomeName".to_string());
 
     let command = DeleteCommand { path: None };
+    let template = Template::new(
+        some_path.clone(),
+        some_name.clone(),
+        template::Engine::Command,
+    );
 
     let templates = vec![
-        Template::new(
-            some_path.clone(),
-            some_name.clone(),
-            template::Engine::Command,
-        ),
+        template.clone(),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
@@ -266,8 +267,9 @@ fn deletes_selected_template() {
 
     let mut selector = MockSelector::new();
     selector
-        .expect_select_from()
-        .return_const(Ok(Some(some_name.0.clone())));
+        .expect_select_template()
+        .withf(move |t| t == templates.clone())
+        .return_const(Ok(Some(template.clone())));
 
     let command_engine = MockCommandEnginePort::new();
 
@@ -352,7 +354,10 @@ fn skips_deleting_if_selection_is_none() {
     let environment = MockEnvironment::new();
 
     let mut selector = MockSelector::new();
-    selector.expect_select_from().return_const(Ok(None));
+    selector
+        .expect_select_template()
+        .withf(move |t| t == templates.clone())
+        .return_const(Ok(None));
 
     let command_engine = MockCommandEnginePort::new();
 

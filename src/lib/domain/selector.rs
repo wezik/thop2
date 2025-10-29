@@ -1,10 +1,13 @@
 use mockall::automock;
 
-use crate::domain::error::{self, DomainError, DomainErrorTemplate};
+use crate::domain::{
+    error::{self, DomainError, DomainErrorTemplate},
+    template::Template,
+};
 
 #[automock]
 pub trait Selector {
-    fn select_from<'a>(&self, templates: &[&'a str]) -> Result<Option<String>, DomainError>;
+    fn select_template(&self, templates: &[Template]) -> Result<Option<Template>, DomainError>;
 }
 
 pub const SELECTION_FAILED: DomainErrorTemplate = error::new(

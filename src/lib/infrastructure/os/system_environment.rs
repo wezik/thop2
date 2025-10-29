@@ -63,8 +63,6 @@ impl Environment for SystemEnvironment {
     }
 
     fn get_config_value(&self, key: &str) -> Result<String, DomainError> {
-        std::env::var(key).map_err(|e| {
-            ENVIRONMENT_READ_ERROR.with_attr("error", e.to_string())
-        })
+        std::env::var(key).map_err(|e| ENVIRONMENT_READ_ERROR.with_attr("error", e.to_string()))
     }
 }

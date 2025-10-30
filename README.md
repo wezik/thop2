@@ -42,6 +42,7 @@ Destination is set but things can still change and break backwards compatibility
 - [x] Integration tests setup
 - [ ] Architecture tests
 - [x] Rust CI setup
+- [x] Automate dependency updates (Renovate)
 - [ ] Sonar coverage reports
 - [ ] Release model
 - [ ] Install script

@@ -6,12 +6,6 @@
   ],
   "packageRules": [
     {
-      "matchManagers": ["cargo"],
-      "lockFileMaintenance": {
-        "enabled": true
-      }
-    },
-    {
       "matchUpdateTypes": [
         "patch",
         "minor"

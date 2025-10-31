@@ -16,13 +16,14 @@ use crab_hop::{
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
     },
-    multiplexer::tmux::app::tmux_api::TmuxApi,
+    multiplexer::tmux::{app::tmux_api::TmuxApi, domain::tmux_service::TmuxService},
 };
 
 #[test]
 fn creates_template_with_path_and_name() {
     // given
-    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let tmux_service_arc = Arc::new(TmuxService::new());
+    let tmux_api_arc = Arc::new(TmuxApi::new(tmux_service_arc));
     let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
 
     // mock environment to not interact with the os
@@ -70,7 +71,8 @@ fn creates_template_with_name() {
     // given
     let cwd = template::Path("~/some/path".to_string());
 
-    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let tmux_service_arc = Arc::new(TmuxService::new());
+    let tmux_api_arc = Arc::new(TmuxApi::new(tmux_service_arc));
     let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
     // mock environment to not interact with the os
     let mut environment = MockEnvironment::new();
@@ -119,7 +121,8 @@ fn creates_template_with_name() {
 #[test]
 fn creates_template_with_path() {
     // given
-    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let tmux_service_arc = Arc::new(TmuxService::new());
+    let tmux_api_arc = Arc::new(TmuxApi::new(tmux_service_arc));
     let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
     // mock environment to not interact with the os
     let environment = MockEnvironment::new();
@@ -167,7 +170,8 @@ fn creates_template() {
     // given
     let cwd = template::Path("~/some/path".to_string());
 
-    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let tmux_service_arc = Arc::new(TmuxService::new());
+    let tmux_api_arc = Arc::new(TmuxApi::new(tmux_service_arc));
     let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
     // mock environment to not interact with the os
     let mut environment = MockEnvironment::new();

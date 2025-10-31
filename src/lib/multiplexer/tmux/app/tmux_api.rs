@@ -1,23 +1,29 @@
+use std::sync::Arc;
+
 use mockall::automock;
 
-use crate::domain::{error::DomainError, template::Template};
+use crate::{
+    domain::{error::DomainError, template::Template},
+    multiplexer::tmux::domain::tmux_service::TmuxServicePort,
+};
 
 #[automock]
 pub trait TmuxApiPort {
     fn open(&self, template: Template) -> Result<(), DomainError>;
 }
 
-pub struct TmuxApi;
+pub struct TmuxApi<S: TmuxServicePort> {
+    tmux_service: Arc<S>,
+}
 
-impl TmuxApi {
-    pub fn new() -> Self {
-        Self {}
+impl<S: TmuxServicePort> TmuxApi<S> {
+    pub fn new(tmux_service: Arc<S>) -> Self {
+        Self { tmux_service }
     }
 }
 
-impl TmuxApiPort for TmuxApi {
+impl<S: TmuxServicePort> TmuxApiPort for TmuxApi<S> {
     fn open(&self, template: Template) -> Result<(), DomainError> {
-        println!("Opening template: {:?}", template);
-        Ok(())
+        self.tmux_service.open(template.try_into()?)
     }
 }

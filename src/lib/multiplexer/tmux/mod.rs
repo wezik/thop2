@@ -2,3 +2,8 @@
 pub mod app {
     pub mod tmux_api;
 }
+
+pub mod domain {
+    pub mod tmux_service;
+    pub mod tmux_template;
+}

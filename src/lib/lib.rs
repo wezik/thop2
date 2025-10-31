@@ -29,8 +29,8 @@ pub mod infrastructure {
     }
 }
 
-pub mod engines {
-    pub mod command_engine;
-    pub mod tmux_engine;
-    pub mod zellij_engine;
+pub mod multiplexer {
+    pub mod command;
+    pub mod tmux;
+    pub mod zellij;
 }

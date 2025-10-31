@@ -2,13 +2,13 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     domain::{template_service::TemplateService, thop_service::ThopService},
-    engines::command_engine::{
-        app::command_engine::CommandEngine, domain::command_service::CommandService,
-    },
     infrastructure::{
         os::system_environment::SystemEnvironment,
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
+    },
+    multiplexer::command::{
+        app::command_engine::CommandEngine, domain::command_service::CommandService,
     },
 };
 

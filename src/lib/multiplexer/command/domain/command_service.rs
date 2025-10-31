@@ -1,7 +1,7 @@
 use mockall::automock;
 
 use crate::{
-    domain::error::DomainError, engines::command_engine::domain::command_template::CommandTemplate,
+    domain::error::DomainError, multiplexer::command::domain::command_template::CommandTemplate,
 };
 
 #[automock]

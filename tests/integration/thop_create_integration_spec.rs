@@ -11,12 +11,12 @@ use crab_hop::{
         template_service::TemplateService,
         thop_service::{CreateCommand, ThopService, ThopServicePort},
     },
-    engines::command_engine::{
-        app::command_engine::CommandEngine, domain::command_service::CommandService,
-    },
     infrastructure::{
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
+    },
+    multiplexer::command::{
+        app::command_engine::CommandEngine, domain::command_service::CommandService,
     },
 };
 

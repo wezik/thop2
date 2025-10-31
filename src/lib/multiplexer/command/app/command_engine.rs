@@ -4,7 +4,7 @@ use mockall::automock;
 
 use crate::{
     domain::{error::DomainError, template::Template},
-    engines::command_engine::domain::{
+    multiplexer::command::domain::{
         command_service::CommandServicePort, command_template::CommandTemplate,
     },
 };

@@ -80,9 +80,9 @@ fn creates_template() {
 
         let service = ThopService::new(
             Arc::new(template_service),
+            Arc::new(selector),
             Arc::new(command_engine),
             Arc::new(environment),
-            Arc::new(selector),
         );
 
         // when
@@ -124,9 +124,9 @@ fn opens_exact_template() {
 
     let service = ThopService::new(
         Arc::new(template_service),
+        Arc::new(selector),
         Arc::new(command_engine),
         Arc::new(environment),
-        Arc::new(selector),
     );
 
     // when
@@ -174,9 +174,9 @@ fn opens_selected_template() {
 
     let service = ThopService::new(
         Arc::new(template_service),
+        Arc::new(selector),
         Arc::new(command_engine),
         Arc::new(environment),
-        Arc::new(selector),
     );
 
     // when
@@ -220,9 +220,9 @@ fn skips_opening_if_selection_is_none() {
 
     let service = ThopService::new(
         Arc::new(template_service),
+        Arc::new(selector),
         Arc::new(command_engine),
         Arc::new(environment),
-        Arc::new(selector),
     );
 
     // when
@@ -275,9 +275,9 @@ fn deletes_selected_template() {
 
     let service = ThopService::new(
         Arc::new(template_service),
+        Arc::new(selector),
         Arc::new(command_engine),
         Arc::new(environment),
-        Arc::new(selector),
     );
 
     // when
@@ -309,9 +309,9 @@ fn deletes_exact_template() {
 
     let service = ThopService::new(
         Arc::new(template_service),
+        Arc::new(selector),
         Arc::new(command_engine),
         Arc::new(environment),
-        Arc::new(selector),
     );
 
     // when
@@ -363,9 +363,9 @@ fn skips_deleting_if_selection_is_none() {
 
     let service = ThopService::new(
         Arc::new(template_service),
+        Arc::new(selector),
         Arc::new(command_engine),
         Arc::new(environment),
-        Arc::new(selector),
     );
 
     // when

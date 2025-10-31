@@ -1,10 +1,9 @@
 // Core "upper" module containing non engine specific code
 pub mod app {
-    pub mod wiring;
+    pub mod bootstrap;
 }
 
 pub mod domain {
-
     pub mod environment;
     pub mod error;
     pub mod selector;
@@ -17,7 +16,6 @@ pub mod domain {
 }
 
 pub mod infrastructure {
-
     pub mod os {
         pub mod system_environment;
     }

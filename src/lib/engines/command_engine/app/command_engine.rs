@@ -1,9 +1,11 @@
+use std::sync::Arc;
+
 use mockall::automock;
 
 use crate::{
     domain::{error::DomainError, template::Template},
     engines::command_engine::domain::{
-        command_service::CommandService, command_template::CommandTemplate,
+        command_service::CommandServicePort, command_template::CommandTemplate,
     },
 };
 
@@ -12,19 +14,17 @@ pub trait CommandEnginePort {
     fn process(&self, template: Template) -> Result<(), DomainError>;
 }
 
-pub struct CommandEngine {
-    pub command_service: CommandService,
+pub struct CommandEngine<CS: CommandServicePort> {
+    command_service: Arc<CS>,
 }
 
-impl CommandEngine {
-    pub fn new(command_service: CommandService) -> CommandEngine {
-        CommandEngine {
-            command_service: command_service,
-        }
+impl<CS: CommandServicePort> CommandEngine<CS> {
+    pub fn new(command_service: Arc<CS>) -> CommandEngine<CS> {
+        CommandEngine { command_service }
     }
 }
 
-impl CommandEnginePort for CommandEngine {
+impl<CS: CommandServicePort> CommandEnginePort for CommandEngine<CS> {
     fn process(&self, template: Template) -> Result<(), DomainError> {
         let command_template = CommandTemplate {
             commands: template.commands,

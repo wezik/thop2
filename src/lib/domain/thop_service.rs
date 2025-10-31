@@ -34,21 +34,33 @@ pub struct OpenCommand {
     pub path: Option<template::Path>,
 }
 
-pub struct ThopService {
-    pub template_service: Arc<dyn TemplateServicePort>,
-    pub command_engine: Arc<dyn CommandEnginePort>,
-    pub environment: Arc<dyn Environment>,
-    pub selector: Arc<dyn Selector>,
+pub struct ThopService<TS, SE, CE, E>
+where
+    TS: TemplateServicePort,
+    SE: Selector,
+    CE: CommandEnginePort,
+    E: Environment,
+{
+    template_service: Arc<TS>,
+    selector: Arc<SE>,
+    command_engine: Arc<CE>,
+    environment: Arc<E>,
 }
 
-impl ThopService {
+impl<TS, SE, CE, E> ThopService<TS, SE, CE, E>
+where
+    TS: TemplateServicePort,
+    SE: Selector,
+    CE: CommandEnginePort,
+    E: Environment,
+{
     pub fn new(
-        template_service: Arc<dyn TemplateServicePort>,
-        command_engine: Arc<dyn CommandEnginePort>,
-        environment: Arc<dyn Environment>,
-        selector: Arc<dyn Selector>,
-    ) -> ThopService {
-        ThopService {
+        template_service: Arc<TS>,
+        selector: Arc<SE>,
+        command_engine: Arc<CE>,
+        environment: Arc<E>,
+    ) -> Self {
+        Self {
             template_service,
             command_engine,
             environment,
@@ -57,7 +69,13 @@ impl ThopService {
     }
 }
 
-impl ThopServicePort for ThopService {
+impl<TS, SE, CE, E> ThopServicePort for ThopService<TS, SE, CE, E>
+where
+    TS: TemplateServicePort,
+    SE: Selector,
+    CE: CommandEnginePort,
+    E: Environment,
+{
     fn create(&self, command: CreateCommand) -> Result<(), DomainError> {
         let path = match command.path {
             Some(path) => path,

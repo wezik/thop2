@@ -7,19 +7,19 @@ use crate::domain::{
     template::Template,
 };
 
-pub struct FzfSelector {
-    environment: Arc<dyn Environment>,
+pub struct FzfSelector<E: Environment> {
+    environment: Arc<E>,
 }
 
-impl FzfSelector {
-    pub fn new(environment: Arc<dyn Environment>) -> FzfSelector {
+impl<E: Environment> FzfSelector<E> {
+    pub fn new(environment: Arc<E>) -> FzfSelector<E> {
         FzfSelector {
             environment: environment,
         }
     }
 }
 
-impl Selector for FzfSelector {
+impl<E: Environment> Selector for FzfSelector<E> {
     fn select_template(&self, templates: &[Template]) -> Result<Option<Template>, DomainError> {
         let entries = templates
             .iter()
@@ -36,7 +36,7 @@ impl Selector for FzfSelector {
     }
 }
 
-impl FzfSelector {
+impl<E: Environment> FzfSelector<E> {
     fn select_from(&self, entries: &[&str]) -> Result<Option<String>, DomainError> {
         if entries.is_empty() {
             return Ok(None);

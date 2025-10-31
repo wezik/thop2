@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use ::clap::Parser;
 use crab_hop::{
-    app::wiring::thop_service,
+    app::bootstrap::{thop_service, RealThopService},
     domain::{
         error::DomainError,
         template,
@@ -15,7 +13,7 @@ use crate::clap::{Clap, ClapCommands};
 mod clap;
 
 struct Cli {
-    thop: Arc<dyn ThopServicePort>,
+    thop: RealThopService,
 }
 
 impl Cli {
@@ -49,7 +47,8 @@ impl Cli {
 
 fn main() -> Result<(), DomainError> {
     let args = std::env::args().collect();
-    let thop_service = thop_service();
-    let cli = Cli { thop: thop_service };
+    let cli = Cli {
+        thop: thop_service(),
+    };
     cli.run(args)
 }

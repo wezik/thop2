@@ -60,7 +60,7 @@ fn preload_templates() -> Vec<Template> {
         Template {
             path: Path("resources/template.yaml".to_string()),
             name: Name("FooBar".to_string()),
-            engine: Engine::Command,
+            engine: Engine::Tmux,
             commands: Commands(vec![
                 "echo 'Hello World from FooBar'".to_string(),
                 "echo 'Goodbye World from FooBar'".to_string(),
@@ -69,7 +69,7 @@ fn preload_templates() -> Vec<Template> {
         Template {
             path: Path("resources/template-2.yaml".to_string()),
             name: Name("BarFoo".to_string()),
-            engine: Engine::Command,
+            engine: Engine::Tmux,
             commands: Commands(vec![
                 "echo 'Hello World from BarFoo'".to_string(),
                 "echo 'Goodbye World from BarFoo'".to_string(),

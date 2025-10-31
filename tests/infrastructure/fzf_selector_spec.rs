@@ -31,12 +31,12 @@ fn selects_from_list() {
         Template::new(
             template::Path("~/some/path".to_string()),
             template::Name("SomeName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
     environment
@@ -67,12 +67,12 @@ fn handles_130_exit_code() {
         Template::new(
             template::Path("~/some/path".to_string()),
             template::Name("SomeName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
     environment
@@ -98,12 +98,12 @@ fn propagates_unhandled_exit_codes_as_errors() {
         Template::new(
             template::Path("~/some/path".to_string()),
             template::Name("SomeName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
     environment

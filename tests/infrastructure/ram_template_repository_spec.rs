@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crab_hop::{
     domain::{
-        template::{self, Engine, Template, TEMPLATE_ALREADY_EXSISTS, TEMPLATE_NOT_FOUND},
+        template::{self, Template, TEMPLATE_ALREADY_EXSISTS, TEMPLATE_NOT_FOUND},
         template_repository::TemplateRepository,
     },
     infrastructure::persistence::ram_template_repository::RamTemplateRepository,
@@ -20,7 +20,7 @@ fn find_errors_on_non_existing_templates() {
     let template = Template::new(
         template::Path("~/some/path".to_string()),
         template::Name("SomeName".to_string()),
-        Engine::Command,
+        template::Engine::Tmux,
     );
     let repository = repository();
 
@@ -38,7 +38,7 @@ fn creates_and_finds_templates() {
     let template = Template::new(
         template::Path("~/some/path".to_string()),
         template::Name("SomeName".to_string()),
-        Engine::Command,
+        template::Engine::Tmux,
     );
     let mut repository = repository();
 
@@ -56,7 +56,7 @@ fn prevents_creating_duplicate_templates() {
     let template = Template::new(
         template::Path("~/some/path".to_string()),
         template::Name("SomeName".to_string()),
-        Engine::Command,
+        template::Engine::Tmux,
     );
     let mut repository = repository();
     repository.create(template.clone()).unwrap();
@@ -76,12 +76,12 @@ fn lists_templates() {
         Template::new(
             template::Path("~/some/path".to_string()),
             template::Name("SomeName".to_string()),
-            Engine::Command,
+            template::Engine::Tmux,
         ),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
     let mut repository = repository();
@@ -106,7 +106,7 @@ fn delete_errors_on_non_existing_templates() {
     let template = Template::new(
         template::Path("~/some/path".to_string()),
         template::Name("SomeName".to_string()),
-        Engine::Command,
+        template::Engine::Tmux,
     );
     let mut repository = repository();
 
@@ -124,7 +124,7 @@ fn deletes_templates() {
     let template = Template::new(
         template::Path("~/some/path".to_string()),
         template::Name("SomeName".to_string()),
-        Engine::Command,
+        template::Engine::Tmux,
     );
     let mut repository = repository();
     repository

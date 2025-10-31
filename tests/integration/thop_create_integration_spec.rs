@@ -12,19 +12,19 @@ use crab_hop::{
         thop_service::{CreateCommand, ThopService, ThopServicePort},
     },
     infrastructure::{
+        multiplexer::multi_multiplexer_gateway::MultiMultiplexerGateway,
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
     },
-    multiplexer::command::{
-        app::command_engine::CommandEngine, domain::command_service::CommandService,
-    },
+    multiplexer::tmux::app::tmux_api::TmuxApi,
 };
 
 #[test]
 fn creates_template_with_path_and_name() {
     // given
-    let command_service = Arc::new(CommandService::new());
-    let command_engine = Arc::new(CommandEngine::new(command_service));
+    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
+
     // mock environment to not interact with the os
     let environment = MockEnvironment::new();
     let environment_arc = Arc::new(environment);
@@ -39,7 +39,7 @@ fn creates_template_with_path_and_name() {
     let thop = ThopService::new(
         template_service,
         selector_arc,
-        command_engine,
+        multiplexer_gateway_arc,
         environment_arc,
     );
 
@@ -70,8 +70,8 @@ fn creates_template_with_name() {
     // given
     let cwd = template::Path("~/some/path".to_string());
 
-    let command_service = Arc::new(CommandService::new());
-    let command_engine = Arc::new(CommandEngine::new(command_service));
+    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
     // mock environment to not interact with the os
     let mut environment = MockEnvironment::new();
     environment
@@ -90,7 +90,7 @@ fn creates_template_with_name() {
     let thop = ThopService::new(
         template_service,
         template_selector,
-        command_engine,
+        multiplexer_gateway_arc,
         environment_arc,
     );
 
@@ -119,8 +119,8 @@ fn creates_template_with_name() {
 #[test]
 fn creates_template_with_path() {
     // given
-    let command_service = Arc::new(CommandService::new());
-    let command_engine = Arc::new(CommandEngine::new(command_service));
+    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
     // mock environment to not interact with the os
     let environment = MockEnvironment::new();
     let environment_arc = Arc::new(environment);
@@ -135,7 +135,7 @@ fn creates_template_with_path() {
     let thop = ThopService::new(
         template_service,
         template_selector,
-        command_engine,
+        multiplexer_gateway_arc,
         environment_arc,
     );
 
@@ -167,8 +167,8 @@ fn creates_template() {
     // given
     let cwd = template::Path("~/some/path".to_string());
 
-    let command_service = Arc::new(CommandService::new());
-    let command_engine = Arc::new(CommandEngine::new(command_service));
+    let tmux_api_arc = Arc::new(TmuxApi::new());
+    let multiplexer_gateway_arc = Arc::new(MultiMultiplexerGateway::new(tmux_api_arc));
     // mock environment to not interact with the os
     let mut environment = MockEnvironment::new();
     environment
@@ -187,7 +187,7 @@ fn creates_template() {
     let thop = ThopService::new(
         template_service,
         template_selector,
-        command_engine,
+        multiplexer_gateway_arc,
         environment_arc,
     );
 

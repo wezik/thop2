@@ -3,25 +3,24 @@ use std::sync::{Arc, Mutex};
 use crate::{
     domain::{template_service::TemplateService, thop_service::ThopService},
     infrastructure::{
+        multiplexer::multi_multiplexer_gateway::MultiMultiplexerGateway,
         os::system_environment::SystemEnvironment,
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
     },
-    multiplexer::command::{
-        app::command_engine::CommandEngine, domain::command_service::CommandService,
-    },
+    multiplexer::tmux::app::tmux_api::TmuxApi,
 };
 
 pub type RealThopService = ThopService<
     TemplateService<RamTemplateRepository>,
     FzfSelector<SystemEnvironment>,
-    RealCommandEngine,
+    MultiMultiplexerGateway<TmuxApi>,
     SystemEnvironment,
 >;
 
 pub fn thop_service() -> RealThopService {
     // multiplexers
-    let command_engine_arc = Arc::new(command_engine());
+    let multi_multiplexer_gateway_arc = multiplexer_gateway();
 
     // environment
     let environment_arc = Arc::new(SystemEnvironment::new());
@@ -37,14 +36,12 @@ pub fn thop_service() -> RealThopService {
     ThopService::new(
         template_service_arc,
         selector_arc,
-        command_engine_arc,
+        multi_multiplexer_gateway_arc,
         environment_arc,
     )
 }
 
-type RealCommandEngine = CommandEngine<CommandService>;
-
-fn command_engine() -> RealCommandEngine {
-    let command_service_arc = Arc::new(CommandService::new());
-    CommandEngine::new(command_service_arc)
+fn multiplexer_gateway() -> Arc<MultiMultiplexerGateway<TmuxApi>> {
+    let tmux_api_arc = Arc::new(TmuxApi::new());
+    Arc::new(MultiMultiplexerGateway::new(tmux_api_arc))
 }

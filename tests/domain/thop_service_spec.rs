@@ -1,14 +1,12 @@
 use std::sync::Arc;
 
-use crab_hop::{
-    domain::{
-        environment::MockEnvironment,
-        selector::MockSelector,
-        template::{self, Template},
-        template_service::MockTemplateServicePort,
-        thop_service::{CreateCommand, DeleteCommand, OpenCommand, ThopService, ThopServicePort},
-    },
-    multiplexer::command::app::command_engine::MockCommandEnginePort,
+use crab_hop::domain::{
+    environment::MockEnvironment,
+    multiplexer_gateway::MockMultiplexerGateway,
+    selector::MockSelector,
+    template::{self, Template},
+    template_service::MockTemplateServicePort,
+    thop_service::{CreateCommand, DeleteCommand, OpenCommand, ThopService, ThopServicePort},
 };
 
 #[test]
@@ -61,7 +59,7 @@ fn creates_template() {
         let default_template = Template::new(
             test_case.expected_path.clone(),
             test_case.expected_name.clone(),
-            template::Engine::Command,
+            template::Engine::Tmux,
         );
 
         let mut template_service = MockTemplateServicePort::new();
@@ -76,12 +74,12 @@ fn creates_template() {
             .return_const(Ok(cwd.clone().0));
 
         let selector = MockSelector::new();
-        let command_engine = MockCommandEnginePort::new();
+        let multiplexer_gateway = MockMultiplexerGateway::new();
 
         let service = ThopService::new(
             Arc::new(template_service),
             Arc::new(selector),
-            Arc::new(command_engine),
+            Arc::new(multiplexer_gateway),
             Arc::new(environment),
         );
 
@@ -100,7 +98,7 @@ fn opens_exact_template() {
     let template = Template::new(
         path.clone(),
         template::Name("SomeName".to_string()),
-        template::Engine::Command,
+        template::Engine::Tmux,
     );
 
     let command = OpenCommand {
@@ -115,17 +113,17 @@ fn opens_exact_template() {
 
     let environment = MockEnvironment::new();
     let selector = MockSelector::new();
-    let mut command_engine = MockCommandEnginePort::new();
+    let mut multiplexer_gateway = MockMultiplexerGateway::new();
 
-    command_engine
-        .expect_process()
+    multiplexer_gateway
+        .expect_open()
         .withf(move |t| *t == template.clone())
         .return_const(Ok(()));
 
     let service = ThopService::new(
         Arc::new(template_service),
         Arc::new(selector),
-        Arc::new(command_engine),
+        Arc::new(multiplexer_gateway),
         Arc::new(environment),
     );
 
@@ -141,14 +139,14 @@ fn opens_selected_template() {
     // given
     let path = template::Path("~/some/path".to_string());
     let name = template::Name("SomeName".to_string());
-    let template = Template::new(path.clone(), name.clone(), template::Engine::Command);
+    let template = Template::new(path.clone(), name.clone(), template::Engine::Tmux);
 
     let templates = vec![
         template.clone(),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
 
@@ -166,16 +164,16 @@ fn opens_selected_template() {
         .withf(move |t| t == templates.clone())
         .return_const(Ok(Some(template.clone())));
 
-    let mut command_engine = MockCommandEnginePort::new();
-    command_engine
-        .expect_process()
+    let mut multiplexer_gateway = MockMultiplexerGateway::new();
+    multiplexer_gateway
+        .expect_open()
         .withf(move |t| *t == template.clone())
         .return_const(Ok(()));
 
     let service = ThopService::new(
         Arc::new(template_service),
         Arc::new(selector),
-        Arc::new(command_engine),
+        Arc::new(multiplexer_gateway),
         Arc::new(environment),
     );
 
@@ -191,14 +189,14 @@ fn skips_opening_if_selection_is_none() {
     // given
     let path = template::Path("~/some/path".to_string());
     let name = template::Name("SomeName".to_string());
-    let template = Template::new(path.clone(), name.clone(), template::Engine::Command);
+    let template = Template::new(path.clone(), name.clone(), template::Engine::Tmux);
 
     let templates = vec![
         template.clone(),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
 
@@ -216,12 +214,12 @@ fn skips_opening_if_selection_is_none() {
         .withf(move |t| t == templates.clone())
         .return_const(Ok(None));
 
-    let command_engine = MockCommandEnginePort::new();
+    let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
         Arc::new(template_service),
         Arc::new(selector),
-        Arc::new(command_engine),
+        Arc::new(multiplexer_gateway),
         Arc::new(environment),
     );
 
@@ -239,18 +237,14 @@ fn deletes_selected_template() {
     let some_name = template::Name("SomeName".to_string());
 
     let command = DeleteCommand { path: None };
-    let template = Template::new(
-        some_path.clone(),
-        some_name.clone(),
-        template::Engine::Command,
-    );
+    let template = Template::new(some_path.clone(), some_name.clone(), template::Engine::Tmux);
 
     let templates = vec![
         template.clone(),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
 
@@ -271,12 +265,12 @@ fn deletes_selected_template() {
         .withf(move |t| t == templates.clone())
         .return_const(Ok(Some(template.clone())));
 
-    let command_engine = MockCommandEnginePort::new();
+    let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
         Arc::new(template_service),
         Arc::new(selector),
-        Arc::new(command_engine),
+        Arc::new(multiplexer_gateway),
         Arc::new(environment),
     );
 
@@ -305,12 +299,12 @@ fn deletes_exact_template() {
     let environment = MockEnvironment::new();
 
     let selector = MockSelector::new();
-    let command_engine = MockCommandEnginePort::new();
+    let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
         Arc::new(template_service),
         Arc::new(selector),
-        Arc::new(command_engine),
+        Arc::new(multiplexer_gateway),
         Arc::new(environment),
     );
 
@@ -330,15 +324,11 @@ fn skips_deleting_if_selection_is_none() {
     let command = DeleteCommand { path: None };
 
     let templates = vec![
-        Template::new(
-            some_path.clone(),
-            some_name.clone(),
-            template::Engine::Command,
-        ),
+        Template::new(some_path.clone(), some_name.clone(), template::Engine::Tmux),
         Template::new(
             template::Path("~/some/other/path".to_string()),
             template::Name("SomeOtherName".to_string()),
-            template::Engine::Command,
+            template::Engine::Tmux,
         ),
     ];
 
@@ -359,12 +349,12 @@ fn skips_deleting_if_selection_is_none() {
         .withf(move |t| t == templates.clone())
         .return_const(Ok(None));
 
-    let command_engine = MockCommandEnginePort::new();
+    let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
         Arc::new(template_service),
         Arc::new(selector),
-        Arc::new(command_engine),
+        Arc::new(multiplexer_gateway),
         Arc::new(environment),
     );
 

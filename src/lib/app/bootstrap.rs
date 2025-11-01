@@ -19,11 +19,11 @@ pub type RealThopService = ThopService<
 >;
 
 pub fn thop_service() -> RealThopService {
-    // multiplexers
-    let multi_multiplexer_gateway_rc = multiplexer_gateway();
-
     // environment
     let environment_rc = Rc::new(SystemEnvironment::new());
+
+    // multiplexers
+    let multi_multiplexer_gateway_rc = multiplexer_gateway(environment_rc.clone());
 
     // selector
     let selector_rc = Rc::new(FzfSelector::new(environment_rc.clone()));
@@ -41,7 +41,7 @@ pub fn thop_service() -> RealThopService {
     )
 }
 
-fn multiplexer_gateway() -> Rc<MultiMultiplexerGateway<RealTmuxApi>> {
-    let tmux_api_rc = Rc::new(tmux_api());
+fn multiplexer_gateway(environment: Rc<SystemEnvironment>) -> Rc<MultiMultiplexerGateway<RealTmuxApi>> {
+    let tmux_api_rc = Rc::new(tmux_api(environment));
     Rc::new(MultiMultiplexerGateway::new(tmux_api_rc))
 }

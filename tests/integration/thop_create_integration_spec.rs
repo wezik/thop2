@@ -16,19 +16,27 @@ use crab_hop::{
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
     },
-    multiplexer::tmux::{app::tmux_api::TmuxApi, domain::tmux_service::TmuxService},
+    multiplexer::tmux::{app::tmux_api::TmuxApi, domain::tmux_service::TmuxService, infrastructure::tmux_cli_client::TmuxCliClient},
 };
+
+type TestTmuxApi = TmuxApi<TmuxService<TmuxCliClient<MockEnvironment>>>;
+
+fn multiplexer_gateway_rc(environment: Rc<MockEnvironment>) -> Rc<MultiMultiplexerGateway<TestTmuxApi>> {
+    let tmux_cli_client_rc = Rc::new(TmuxCliClient::new(environment));
+    let tmux_service_rc = Rc::new(TmuxService::new(tmux_cli_client_rc));
+    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
+    Rc::new(MultiMultiplexerGateway::new(tmux_api_rc))
+}
 
 #[test]
 fn creates_template_with_path_and_name() {
     // given
-    let tmux_service_rc = Rc::new(TmuxService::new());
-    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
-    let multiplexer_gateway_rc = Rc::new(MultiMultiplexerGateway::new(tmux_api_rc));
-
     // mock environment to not interact with the os
     let environment = MockEnvironment::new();
     let environment_rc = Rc::new(environment);
+
+    let multiplexer_gateway_rc = multiplexer_gateway_rc(environment_rc.clone());
+
     let selector_arc = Rc::new(FzfSelector::new(environment_rc.clone()));
 
     let template_repository = RamTemplateRepository::new();
@@ -69,16 +77,15 @@ fn creates_template_with_name() {
     // given
     let cwd = template::Path("~/some/path".to_string());
 
-    let tmux_service_rc = Rc::new(TmuxService::new());
-    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
-    let multiplexer_gateway_rc = Rc::new(MultiMultiplexerGateway::new(tmux_api_rc));
     // mock environment to not interact with the os
     let mut environment = MockEnvironment::new();
     environment
         .expect_current_dir()
         .return_const(Ok(cwd.0.clone()));
-
     let environment_rc = Rc::new(environment);
+
+    let multiplexer_gateway_rc = multiplexer_gateway_rc(environment_rc.clone());
+
     let template_selector = Rc::new(FzfSelector::new(environment_rc.clone()));
 
     let template_repository = RamTemplateRepository::new();
@@ -117,12 +124,12 @@ fn creates_template_with_name() {
 #[test]
 fn creates_template_with_path() {
     // given
-    let tmux_service_rc = Rc::new(TmuxService::new());
-    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
-    let multiplexer_gateway_rc = Rc::new(MultiMultiplexerGateway::new(tmux_api_rc));
     // mock environment to not interact with the os
     let environment = MockEnvironment::new();
     let environment_rc = Rc::new(environment);
+
+    let multiplexer_gateway_rc = multiplexer_gateway_rc(environment_rc.clone());
+
     let template_selector = Rc::new(FzfSelector::new(environment_rc.clone()));
 
     let template_repository = RamTemplateRepository::new();
@@ -164,16 +171,14 @@ fn creates_template() {
     // given
     let cwd = template::Path("~/some/path".to_string());
 
-    let tmux_service_rc = Rc::new(TmuxService::new());
-    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
-    let multiplexer_gateway_rc = Rc::new(MultiMultiplexerGateway::new(tmux_api_rc));
     // mock environment to not interact with the os
     let mut environment = MockEnvironment::new();
     environment
         .expect_current_dir()
         .return_const(Ok(cwd.0.clone()));
-
     let environment_rc = Rc::new(environment);
+
+    let multiplexer_gateway_rc = multiplexer_gateway_rc(environment_rc.clone());
     let template_selector = Rc::new(FzfSelector::new(environment_rc.clone()));
 
     let template_repository = RamTemplateRepository::new();

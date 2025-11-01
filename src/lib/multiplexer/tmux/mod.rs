@@ -5,6 +5,11 @@ pub mod app {
 }
 
 pub mod domain {
+    pub mod tmux_client;
     pub mod tmux_service;
     pub mod tmux_template;
+}
+
+pub mod infrastructure {
+    pub mod tmux_cli_client;
 }

@@ -30,23 +30,29 @@ Destination is set but things can still change and break backwards compatibility
 ### TODO's for V1:
 - [x] CLI library evaluation and integration (Clap)
 - [x] Minimum viable template definition
-- [ ] V1 ready template definition
-- [x] Template creation
-- [x] Template opening
-- [x] Template removing
-- [ ] Template editing
-- [ ] Template killing
-- [ ] Storing templates in file system
+- [*] Thop domain
+  - [x] Template creation
+  - [x] Template opening
+  - [x] Template removing
+  - [ ] Template editing
+  - [ ] Template killing
+- [ ] File system yaml storage
 - [x] Setup architecture
 - [x] Unit tests setup
 - [x] Integration tests setup
-- [ ] Architecture tests
 - [x] Rust CI setup
 - [x] Automate dependency updates (Renovate)
-- [ ] Sonar coverage reports
-- [ ] Release model
+- [*] Tmux engine integration
+  - [ ] Building a session
+  - [ ] Detecting built templates (as sessions)
+  - [ ] Attaching / Switching to a session
+  - [ ] Killing a session
+  - [ ] Listing sessions and appending to selector
+- [ ] Code coverage reports (Sonar or llvm-cov will do)
+- [ ] Release pipeline
 - [ ] Install script
-- [ ] Tmux engine integration
+- [ ] Architecture tests (will see, if it's worth it, there're no reasonable crates for this)
+- [ ] V1 ready template definition
 - [ ] Template migrations
 
 ### Post V1 Ideas:
@@ -54,4 +60,5 @@ Destination is set but things can still change and break backwards compatibility
 - Zellij engine integration
 - Video showcase in README
 - Setup and Teardown configuration
+- Advanced detection of running tmux sessions (some form of tagging them)
 - Own interactive selection picker (instead of relying on fzf)

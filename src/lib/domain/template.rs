@@ -36,8 +36,7 @@ pub const TEMPLATE_ALREADY_EXSISTS: DomainErrorTemplate =
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum Engine {
-    Command,
-    // Tmux,
+    Tmux,
     // Zellij,
 }
 

@@ -8,6 +8,15 @@ pub enum RunResult {
     Failure(i32),
 }
 
+impl RunResult {
+    pub fn map_failure<F, O: FnOnce(i32) -> F>(self, op: O) -> Result<String, F> {
+        match self {
+            RunResult::Success(result) => Ok(result),
+            RunResult::Failure(code) => Err(op(code)),
+        }
+    }
+}
+
 #[automock]
 pub trait Environment {
     fn current_dir(&self) -> Result<String, DomainError>;

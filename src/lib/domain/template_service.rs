@@ -1,8 +1,8 @@
-use std::sync::{Arc, Mutex};
+use std::rc::Rc;
 
 use mockall::automock;
 
-use crate::domain::error::{DomainError, POISONED_LOCK_ERROR};
+use crate::domain::error::DomainError;
 use crate::domain::template::{Path, Template};
 use crate::domain::template_repository::TemplateRepository;
 
@@ -15,45 +15,29 @@ pub trait TemplateServicePort {
 }
 
 pub struct TemplateService<R: TemplateRepository> {
-    repository: Arc<Mutex<R>>,
+    repository: Rc<R>,
 }
 
 impl<R: TemplateRepository> TemplateService<R> {
-    pub fn new(repository: Arc<Mutex<R>>) -> Self {
+    pub fn new(repository: Rc<R>) -> Self {
         Self { repository }
     }
 }
 
 impl<R: TemplateRepository> TemplateServicePort for TemplateService<R> {
     fn create(&self, template: Template) -> Result<(), DomainError> {
-        let mut repo = self
-            .repository
-            .lock()
-            .map_err(|err| POISONED_LOCK_ERROR.with_attr("error", err.to_string()))?;
-        repo.create(template)
+        self.repository.create(template)
     }
 
     fn delete(&self, path: Path) -> Result<(), DomainError> {
-        let mut repo = self
-            .repository
-            .lock()
-            .map_err(|err| POISONED_LOCK_ERROR.with_attr("error", err.to_string()))?;
-        repo.delete(path)
+        self.repository.delete(path)
     }
 
     fn get(&self, path: Path) -> Result<Template, DomainError> {
-        let repo = self
-            .repository
-            .lock()
-            .map_err(|err| POISONED_LOCK_ERROR.with_attr("error", err.to_string()))?;
-        repo.find(path)
+        self.repository.find(path)
     }
 
     fn list(&self) -> Result<Vec<Template>, DomainError> {
-        let repo = self
-            .repository
-            .lock()
-            .map_err(|err| POISONED_LOCK_ERROR.with_attr("error", err.to_string()))?;
-        repo.list()
+        self.repository.list()
     }
 }

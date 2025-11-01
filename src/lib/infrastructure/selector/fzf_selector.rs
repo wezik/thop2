@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crate::domain::{
     environment::{Environment, RunResult, ENVIRONMENT_RUN_COMMAND_ERROR},
@@ -8,11 +8,11 @@ use crate::domain::{
 };
 
 pub struct FzfSelector<E: Environment> {
-    environment: Arc<E>,
+    environment: Rc<E>,
 }
 
 impl<E: Environment> FzfSelector<E> {
-    pub fn new(environment: Arc<E>) -> FzfSelector<E> {
+    pub fn new(environment: Rc<E>) -> FzfSelector<E> {
         FzfSelector {
             environment: environment,
         }

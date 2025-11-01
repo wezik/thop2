@@ -1,21 +1,24 @@
-use std::sync::{Arc, Mutex};
+use std::rc::Rc;
 
+use crab_hop::domain::template_service::TemplateServicePort;
 use crab_hop::domain::{
+    template::{self, Template},
     template_repository::MockTemplateRepository,
-    template_service::{TemplateService, TemplateServicePort},
+    template_service::TemplateService,
 };
-
-use crate::domain::template_fixtures::some_template;
 
 #[test]
 fn creates_template() {
     // given
-    let template = some_template();
-
+    let template = Template::new(
+        template::Path("some path".to_string()),
+        template::Name("some name".to_string()),
+        template::Engine::Tmux,
+    );
     let mut repository = MockTemplateRepository::new();
     repository.expect_create().return_const(Ok(()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
     let result = service.create(template.clone());
@@ -27,32 +30,45 @@ fn creates_template() {
 #[test]
 fn gets_template() {
     // given
-    let expected_template = some_template();
+    let template = Template::new(
+        template::Path("some path".to_string()),
+        template::Name("some name".to_string()),
+        template::Engine::Tmux,
+    );
 
     let mut repository = MockTemplateRepository::new();
-    repository
-        .expect_find()
-        .return_const(Ok(expected_template.clone()));
+    repository.expect_find().return_const(Ok(template.clone()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
-    let result = service.get(expected_template.path.clone());
+    let result = service.get(template.path.clone());
 
     // then
     let template = result.expect("expected result to be ok");
-    assert_eq!(template, expected_template);
+    assert_eq!(template, template);
 }
 
 #[test]
 fn lists_templates() {
     // given
-    let templates = vec![some_template(), some_template()];
+    let templates = vec![
+        Template::new(
+            template::Path("some path".to_string()),
+            template::Name("some name".to_string()),
+            template::Engine::Tmux,
+        ),
+        Template::new(
+            template::Path("some path".to_string()),
+            template::Name("some name".to_string()),
+            template::Engine::Tmux,
+        ),
+    ];
 
     let mut repository = MockTemplateRepository::new();
     repository.expect_list().return_const(Ok(templates.clone()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
     let result = service.list();
@@ -65,15 +81,19 @@ fn lists_templates() {
 #[test]
 fn deletes_template() {
     // given
-    let expected_template = some_template();
+    let template = Template::new(
+        template::Path("some path".to_string()),
+        template::Name("some name".to_string()),
+        template::Engine::Tmux,
+    );
 
     let mut repository = MockTemplateRepository::new();
     repository.expect_delete().return_const(Ok(()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
-    let result = service.delete(expected_template.path.clone());
+    let result = service.delete(template.path);
 
     // then
     assert!(result.is_ok());

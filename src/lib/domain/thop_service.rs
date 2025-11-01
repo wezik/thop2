@@ -1,10 +1,10 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use mockall::automock;
 
+use crate::domain::multiplexer_gateway::MultiplexerGateway;
 use crate::domain::template_service::TemplateServicePort;
 use crate::domain::{environment::Environment, error::DomainError, selector::Selector, template};
-use crate::multiplexer::command::app::command_engine::CommandEnginePort;
 
 #[automock]
 pub trait ThopServicePort {
@@ -34,46 +34,46 @@ pub struct OpenCommand {
     pub path: Option<template::Path>,
 }
 
-pub struct ThopService<TS, SE, CE, E>
+pub struct ThopService<TS, SE, MG, E>
 where
     TS: TemplateServicePort,
     SE: Selector,
-    CE: CommandEnginePort,
+    MG: MultiplexerGateway,
     E: Environment,
 {
-    template_service: Arc<TS>,
-    selector: Arc<SE>,
-    command_engine: Arc<CE>,
-    environment: Arc<E>,
+    template_service: Rc<TS>,
+    selector: Rc<SE>,
+    multiplexer_gateway: Rc<MG>,
+    environment: Rc<E>,
 }
 
-impl<TS, SE, CE, E> ThopService<TS, SE, CE, E>
+impl<TS, SE, MG, E> ThopService<TS, SE, MG, E>
 where
     TS: TemplateServicePort,
     SE: Selector,
-    CE: CommandEnginePort,
+    MG: MultiplexerGateway,
     E: Environment,
 {
     pub fn new(
-        template_service: Arc<TS>,
-        selector: Arc<SE>,
-        command_engine: Arc<CE>,
-        environment: Arc<E>,
+        template_service: Rc<TS>,
+        selector: Rc<SE>,
+        multiplexer_gateway: Rc<MG>,
+        environment: Rc<E>,
     ) -> Self {
         Self {
             template_service,
-            command_engine,
+            multiplexer_gateway,
             environment,
             selector,
         }
     }
 }
 
-impl<TS, SE, CE, E> ThopServicePort for ThopService<TS, SE, CE, E>
+impl<TS, SE, MG, E> ThopServicePort for ThopService<TS, SE, MG, E>
 where
     TS: TemplateServicePort,
     SE: Selector,
-    CE: CommandEnginePort,
+    MG: MultiplexerGateway,
     E: Environment,
 {
     fn create(&self, command: CreateCommand) -> Result<(), DomainError> {
@@ -87,7 +87,7 @@ where
             None => template::Name(path.0.clone()),
         };
 
-        let template = template::Template::new(path, name, template::Engine::Command);
+        let template = template::Template::new(path, name, template::Engine::Tmux);
 
         self.template_service.create(template)?;
         Ok(())
@@ -119,8 +119,6 @@ where
             }
         };
 
-        match template.engine {
-            template::Engine::Command => self.command_engine.process(template),
-        }
+        return self.multiplexer_gateway.open(template);
     }
 }

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{cell::RefCell, collections::HashMap};
 
 use crate::domain::{
     error::DomainError,
@@ -9,35 +9,36 @@ use crate::domain::{
 };
 
 pub struct RamTemplateRepository {
-    templates: HashMap<Path, Template>,
+    templates: RefCell<HashMap<Path, Template>>,
 }
 
 impl TemplateRepository for RamTemplateRepository {
-    fn create(&mut self, template: Template) -> Result<(), DomainError> {
-        match self.templates.get(&template.path) {
+    fn create(&self, template: Template) -> Result<(), DomainError> {
+        let mut templates = self.templates.borrow_mut();
+        match templates.get(&template.path) {
             Some(_) => return Err(TEMPLATE_ALREADY_EXSISTS.with_attr("path", template.path.0)),
-            None => self.templates.insert(template.path.clone(), template),
+            None => templates.insert(template.path.clone(), template),
         };
 
         Ok(())
     }
 
-    fn delete(&mut self, path: Path) -> Result<(), DomainError> {
-        match self.templates.remove(&path) {
+    fn delete(&self, path: Path) -> Result<(), DomainError> {
+        match self.templates.borrow_mut().remove(&path) {
             Some(_) => Ok(()),
             None => Err(TEMPLATE_NOT_FOUND.with_attr("path", path.0)),
         }
     }
 
     fn find(&self, path: Path) -> Result<Template, DomainError> {
-        match self.templates.get(&path) {
+        match self.templates.borrow().get(&path) {
             Some(t) => Ok(t.clone()),
             None => Err(TEMPLATE_NOT_FOUND.with_attr("path", path.0)),
         }
     }
 
     fn list(&self) -> Result<Vec<Template>, DomainError> {
-        Ok(self.templates.values().cloned().collect())
+        Ok(self.templates.borrow().values().cloned().collect())
     }
 }
 
@@ -47,11 +48,13 @@ impl RamTemplateRepository {
             .into_iter()
             .map(|t| (t.path.clone(), t))
             .collect();
-        RamTemplateRepository { templates: map }
+        RamTemplateRepository {
+            templates: RefCell::new(map),
+        }
     }
 
-    pub fn clear(&mut self) {
-        self.templates.clear();
+    pub fn clear(&self) {
+        self.templates.borrow_mut().clear();
     }
 }
 
@@ -60,7 +63,7 @@ fn preload_templates() -> Vec<Template> {
         Template {
             path: Path("resources/template.yaml".to_string()),
             name: Name("FooBar".to_string()),
-            engine: Engine::Command,
+            engine: Engine::Tmux,
             commands: Commands(vec![
                 "echo 'Hello World from FooBar'".to_string(),
                 "echo 'Goodbye World from FooBar'".to_string(),
@@ -69,7 +72,7 @@ fn preload_templates() -> Vec<Template> {
         Template {
             path: Path("resources/template-2.yaml".to_string()),
             name: Name("BarFoo".to_string()),
-            engine: Engine::Command,
+            engine: Engine::Tmux,
             commands: Commands(vec![
                 "echo 'Hello World from BarFoo'".to_string(),
                 "echo 'Goodbye World from BarFoo'".to_string(),

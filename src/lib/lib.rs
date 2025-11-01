@@ -6,16 +6,21 @@ pub mod app {
 pub mod domain {
     pub mod environment;
     pub mod error;
+    pub mod multiplexer_gateway;
     pub mod selector;
-
-    pub mod thop_service;
 
     pub mod template;
     pub mod template_repository;
     pub mod template_service;
+
+    pub mod thop_service;
 }
 
 pub mod infrastructure {
+    pub mod multiplexer {
+        pub mod multi_multiplexer_gateway;
+    }
+
     pub mod os {
         pub mod system_environment;
     }
@@ -30,7 +35,6 @@ pub mod infrastructure {
 }
 
 pub mod multiplexer {
-    pub mod command;
     pub mod tmux;
     pub mod zellij;
 }

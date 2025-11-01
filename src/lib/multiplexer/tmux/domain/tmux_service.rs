@@ -1,7 +1,13 @@
 use std::rc::Rc;
 
-use crate::{domain::error::DomainError, multiplexer::tmux::domain::{tmux_client::TmuxClient, tmux_template::TmuxTemplate}};
+use mockall::automock;
 
+use crate::{
+    domain::error::DomainError,
+    multiplexer::tmux::domain::{tmux_client::TmuxClient, tmux_template::TmuxTemplate},
+};
+
+#[automock]
 pub trait TmuxServicePort {
     fn open(&self, template: TmuxTemplate) -> Result<(), DomainError>;
 }
@@ -18,8 +24,14 @@ impl<C: TmuxClient> TmuxService<C> {
 
 impl<C: TmuxClient> TmuxServicePort for TmuxService<C> {
     fn open(&self, template: TmuxTemplate) -> Result<(), DomainError> {
-        self.client.foo();
-        println!("Opening tmux template: {:?}", template);
+        let active_sessions = self.client.list()?;
+        // build session if it doesn't exist
+        if !active_sessions.contains(&template.session.name) {
+            // TODO: Create session
+        }
+        //TODO: check if running inside of a tmux session
+
+        //TODO: Attach / Swtch to session
         Ok(())
     }
 }

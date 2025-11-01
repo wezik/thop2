@@ -16,12 +16,17 @@ use crab_hop::{
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
     },
-    multiplexer::tmux::{app::tmux_api::TmuxApi, domain::tmux_service::TmuxService, infrastructure::tmux_cli_client::TmuxCliClient},
+    multiplexer::tmux::{
+        app::tmux_api::TmuxApi, domain::tmux_service::TmuxService,
+        infrastructure::tmux_cli_client::TmuxCliClient,
+    },
 };
 
 type TestTmuxApi = TmuxApi<TmuxService<TmuxCliClient<MockEnvironment>>>;
 
-fn multiplexer_gateway_rc(environment: Rc<MockEnvironment>) -> Rc<MultiMultiplexerGateway<TestTmuxApi>> {
+fn multiplexer_gateway_rc(
+    environment: Rc<MockEnvironment>,
+) -> Rc<MultiMultiplexerGateway<TestTmuxApi>> {
     let tmux_cli_client_rc = Rc::new(TmuxCliClient::new(environment));
     let tmux_service_rc = Rc::new(TmuxService::new(tmux_cli_client_rc));
     let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));

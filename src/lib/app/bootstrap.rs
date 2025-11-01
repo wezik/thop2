@@ -41,7 +41,9 @@ pub fn thop_service() -> RealThopService {
     )
 }
 
-fn multiplexer_gateway(environment: Rc<SystemEnvironment>) -> Rc<MultiMultiplexerGateway<RealTmuxApi>> {
+fn multiplexer_gateway(
+    environment: Rc<SystemEnvironment>,
+) -> Rc<MultiMultiplexerGateway<RealTmuxApi>> {
     let tmux_api_rc = Rc::new(tmux_api(environment));
     Rc::new(MultiMultiplexerGateway::new(tmux_api_rc))
 }

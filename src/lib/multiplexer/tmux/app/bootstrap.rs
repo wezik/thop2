@@ -1,6 +1,12 @@
 use std::rc::Rc;
 
-use crate::{infrastructure::os::system_environment::SystemEnvironment, multiplexer::tmux::{app::tmux_api::TmuxApi, domain::tmux_service::TmuxService, infrastructure::tmux_cli_client::TmuxCliClient}};
+use crate::{
+    infrastructure::os::system_environment::SystemEnvironment,
+    multiplexer::tmux::{
+        app::tmux_api::TmuxApi, domain::tmux_service::TmuxService,
+        infrastructure::tmux_cli_client::TmuxCliClient,
+    },
+};
 
 pub type RealTmuxApi = TmuxApi<TmuxService<TmuxCliClient<SystemEnvironment>>>;
 

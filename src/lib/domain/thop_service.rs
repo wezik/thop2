@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use mockall::automock;
 
@@ -41,10 +41,10 @@ where
     MG: MultiplexerGateway,
     E: Environment,
 {
-    template_service: Arc<TS>,
-    selector: Arc<SE>,
-    multiplexer_gateway: Arc<MG>,
-    environment: Arc<E>,
+    template_service: Rc<TS>,
+    selector: Rc<SE>,
+    multiplexer_gateway: Rc<MG>,
+    environment: Rc<E>,
 }
 
 impl<TS, SE, MG, E> ThopService<TS, SE, MG, E>
@@ -55,10 +55,10 @@ where
     E: Environment,
 {
     pub fn new(
-        template_service: Arc<TS>,
-        selector: Arc<SE>,
-        multiplexer_gateway: Arc<MG>,
-        environment: Arc<E>,
+        template_service: Rc<TS>,
+        selector: Rc<SE>,
+        multiplexer_gateway: Rc<MG>,
+        environment: Rc<E>,
     ) -> Self {
         Self {
             template_service,

@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::rc::Rc;
 
 use crab_hop::domain::template_service::TemplateServicePort;
 use crab_hop::domain::{
@@ -18,7 +18,7 @@ fn creates_template() {
     let mut repository = MockTemplateRepository::new();
     repository.expect_create().return_const(Ok(()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
     let result = service.create(template.clone());
@@ -39,7 +39,7 @@ fn gets_template() {
     let mut repository = MockTemplateRepository::new();
     repository.expect_find().return_const(Ok(template.clone()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
     let result = service.get(template.path.clone());
@@ -68,7 +68,7 @@ fn lists_templates() {
     let mut repository = MockTemplateRepository::new();
     repository.expect_list().return_const(Ok(templates.clone()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
     let result = service.list();
@@ -90,7 +90,7 @@ fn deletes_template() {
     let mut repository = MockTemplateRepository::new();
     repository.expect_delete().return_const(Ok(()));
 
-    let service = TemplateService::new(Arc::new(Mutex::new(repository)));
+    let service = TemplateService::new(Rc::new(repository));
 
     // when
     let result = service.delete(template.path);

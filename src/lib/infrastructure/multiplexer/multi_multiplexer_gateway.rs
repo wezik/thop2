@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crate::{
     domain::{
@@ -10,11 +10,11 @@ use crate::{
 };
 
 pub struct MultiMultiplexerGateway<TA: TmuxApiPort> {
-    tmux_api: Arc<TA>,
+    tmux_api: Rc<TA>,
 }
 
 impl<TA: TmuxApiPort> MultiMultiplexerGateway<TA> {
-    pub fn new(tmux_api: Arc<TA>) -> Self {
+    pub fn new(tmux_api: Rc<TA>) -> Self {
         Self { tmux_api }
     }
 }

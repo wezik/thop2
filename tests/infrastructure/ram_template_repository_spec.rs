@@ -9,7 +9,7 @@ use crab_hop::{
 };
 
 fn repository() -> RamTemplateRepository {
-    let mut repository = RamTemplateRepository::new();
+    let repository = RamTemplateRepository::new();
     repository.clear();
     repository
 }
@@ -40,7 +40,7 @@ fn creates_and_finds_templates() {
         template::Name("SomeName".to_string()),
         template::Engine::Tmux,
     );
-    let mut repository = repository();
+    let repository = repository();
 
     // when
     let result = repository.create(template.clone());
@@ -58,7 +58,7 @@ fn prevents_creating_duplicate_templates() {
         template::Name("SomeName".to_string()),
         template::Engine::Tmux,
     );
-    let mut repository = repository();
+    let repository = repository();
     repository.create(template.clone()).unwrap();
 
     // when
@@ -84,7 +84,7 @@ fn lists_templates() {
             template::Engine::Tmux,
         ),
     ];
-    let mut repository = repository();
+    let repository = repository();
     templates
         .iter()
         .for_each(|t| repository.create(t.clone()).unwrap());
@@ -108,7 +108,7 @@ fn delete_errors_on_non_existing_templates() {
         template::Name("SomeName".to_string()),
         template::Engine::Tmux,
     );
-    let mut repository = repository();
+    let repository = repository();
 
     // when
     let result = repository.delete(template.path);
@@ -126,7 +126,7 @@ fn deletes_templates() {
         template::Name("SomeName".to_string()),
         template::Engine::Tmux,
     );
-    let mut repository = repository();
+    let repository = repository();
     repository
         .create(template.clone())
         .expect("expected template to be created");

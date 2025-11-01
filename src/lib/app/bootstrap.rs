@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::rc::Rc;
 
 use crate::{
     domain::{template_service::TemplateService, thop_service::ThopService},
@@ -20,31 +20,31 @@ pub type RealThopService = ThopService<
 
 pub fn thop_service() -> RealThopService {
     // multiplexers
-    let multi_multiplexer_gateway_arc = multiplexer_gateway();
+    let multi_multiplexer_gateway_rc = multiplexer_gateway();
 
     // environment
-    let environment_arc = Arc::new(SystemEnvironment::new());
+    let environment_rc = Rc::new(SystemEnvironment::new());
 
     // selector
-    let selector_arc = Arc::new(FzfSelector::new(environment_arc.clone()));
+    let selector_rc = Rc::new(FzfSelector::new(environment_rc.clone()));
 
     // template domain
-    let template_repository_arc = Arc::new(Mutex::new(RamTemplateRepository::new()));
-    let template_service_arc = Arc::new(TemplateService::new(template_repository_arc));
+    let template_repository_rc = Rc::new(RamTemplateRepository::new());
+    let template_service_rc = Rc::new(TemplateService::new(template_repository_rc));
 
     // thop domain
     ThopService::new(
-        template_service_arc,
-        selector_arc,
-        multi_multiplexer_gateway_arc,
-        environment_arc,
+        template_service_rc,
+        selector_rc,
+        multi_multiplexer_gateway_rc,
+        environment_rc,
     )
 }
 
 type RealTmuxApi = TmuxApi<TmuxService>;
 
-fn multiplexer_gateway() -> Arc<MultiMultiplexerGateway<RealTmuxApi>> {
-    let tmux_service_arc = Arc::new(TmuxService::new());
-    let tmux_api_arc = Arc::new(TmuxApi::new(tmux_service_arc));
-    Arc::new(MultiMultiplexerGateway::new(tmux_api_arc))
+fn multiplexer_gateway() -> Rc<MultiMultiplexerGateway<RealTmuxApi>> {
+    let tmux_service_rc = Rc::new(TmuxService::new());
+    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
+    Rc::new(MultiMultiplexerGateway::new(tmux_api_rc))
 }

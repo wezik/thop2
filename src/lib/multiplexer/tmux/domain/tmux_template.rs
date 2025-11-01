@@ -40,16 +40,12 @@ impl TryFrom<Template> for TmuxTemplate {
             is_created: false,
             session: TmuxSession {
                 name: "default".to_string(),
-                windows: vec![
-                    TmuxWindow {
+                windows: vec![TmuxWindow {
+                    name: "default".to_string(),
+                    panes: vec![TmuxPane {
                         name: "default".to_string(),
-                        panes: vec![
-                            TmuxPane { 
-                                name: "default".to_string()
-                            },
-                        ],
-                    },
-                ],
+                    }],
+                }],
             },
         })
     }

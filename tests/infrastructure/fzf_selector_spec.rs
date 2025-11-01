@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crab_hop::{
     domain::{
@@ -13,7 +13,7 @@ use crab_hop::{
 fn selects_from_empty_list() {
     // given
     let environment = MockEnvironment::new();
-    let selector = FzfSelector::new(Arc::new(environment));
+    let selector = FzfSelector::new(Rc::new(environment));
 
     // when
     let result = selector.select_template(&[]);
@@ -46,7 +46,7 @@ fn selects_from_list() {
             templates[1].name.0.to_string() + "\n",
         )));
 
-    let selector = FzfSelector::new(Arc::new(environment));
+    let selector = FzfSelector::new(Rc::new(environment));
 
     // when
     let result = selector.select_template(&templates);
@@ -80,7 +80,7 @@ fn handles_130_exit_code() {
         // fzf returns with appended newline
         .return_const(Ok(RunResult::Failure(130)));
 
-    let selector = FzfSelector::new(Arc::new(environment));
+    let selector = FzfSelector::new(Rc::new(environment));
 
     // when
     let result = selector.select_template(&templates);
@@ -111,7 +111,7 @@ fn propagates_unhandled_exit_codes_as_errors() {
         // fzf returns with appended newline
         .return_const(Ok(RunResult::Failure(2)));
 
-    let selector = FzfSelector::new(Arc::new(environment));
+    let selector = FzfSelector::new(Rc::new(environment));
 
     // when
     let result = selector.select_template(&templates);

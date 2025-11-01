@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use mockall::automock;
 
@@ -13,11 +13,11 @@ pub trait TmuxApiPort {
 }
 
 pub struct TmuxApi<S: TmuxServicePort> {
-    tmux_service: Arc<S>,
+    tmux_service: Rc<S>,
 }
 
 impl<S: TmuxServicePort> TmuxApi<S> {
-    pub fn new(tmux_service: Arc<S>) -> Self {
+    pub fn new(tmux_service: Rc<S>) -> Self {
         Self { tmux_service }
     }
 }

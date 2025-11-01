@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crab_hop::domain::{
     environment::MockEnvironment,
@@ -77,10 +77,10 @@ fn creates_template() {
         let multiplexer_gateway = MockMultiplexerGateway::new();
 
         let service = ThopService::new(
-            Arc::new(template_service),
-            Arc::new(selector),
-            Arc::new(multiplexer_gateway),
-            Arc::new(environment),
+            Rc::new(template_service),
+            Rc::new(selector),
+            Rc::new(multiplexer_gateway),
+            Rc::new(environment),
         );
 
         // when
@@ -121,10 +121,10 @@ fn opens_exact_template() {
         .return_const(Ok(()));
 
     let service = ThopService::new(
-        Arc::new(template_service),
-        Arc::new(selector),
-        Arc::new(multiplexer_gateway),
-        Arc::new(environment),
+        Rc::new(template_service),
+        Rc::new(selector),
+        Rc::new(multiplexer_gateway),
+        Rc::new(environment),
     );
 
     // when
@@ -171,10 +171,10 @@ fn opens_selected_template() {
         .return_const(Ok(()));
 
     let service = ThopService::new(
-        Arc::new(template_service),
-        Arc::new(selector),
-        Arc::new(multiplexer_gateway),
-        Arc::new(environment),
+        Rc::new(template_service),
+        Rc::new(selector),
+        Rc::new(multiplexer_gateway),
+        Rc::new(environment),
     );
 
     // when
@@ -217,10 +217,10 @@ fn skips_opening_if_selection_is_none() {
     let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
-        Arc::new(template_service),
-        Arc::new(selector),
-        Arc::new(multiplexer_gateway),
-        Arc::new(environment),
+        Rc::new(template_service),
+        Rc::new(selector),
+        Rc::new(multiplexer_gateway),
+        Rc::new(environment),
     );
 
     // when
@@ -268,10 +268,10 @@ fn deletes_selected_template() {
     let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
-        Arc::new(template_service),
-        Arc::new(selector),
-        Arc::new(multiplexer_gateway),
-        Arc::new(environment),
+        Rc::new(template_service),
+        Rc::new(selector),
+        Rc::new(multiplexer_gateway),
+        Rc::new(environment),
     );
 
     // when
@@ -302,10 +302,10 @@ fn deletes_exact_template() {
     let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
-        Arc::new(template_service),
-        Arc::new(selector),
-        Arc::new(multiplexer_gateway),
-        Arc::new(environment),
+        Rc::new(template_service),
+        Rc::new(selector),
+        Rc::new(multiplexer_gateway),
+        Rc::new(environment),
     );
 
     // when
@@ -352,10 +352,10 @@ fn skips_deleting_if_selection_is_none() {
     let multiplexer_gateway = MockMultiplexerGateway::new();
 
     let service = ThopService::new(
-        Arc::new(template_service),
-        Arc::new(selector),
-        Arc::new(multiplexer_gateway),
-        Arc::new(environment),
+        Rc::new(template_service),
+        Rc::new(selector),
+        Rc::new(multiplexer_gateway),
+        Rc::new(environment),
     );
 
     // when

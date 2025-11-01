@@ -19,14 +19,16 @@ impl<E: Environment> TmuxClient for TmuxCliClient<E> {
             .environment
             .run_command("tmux", &["list-sessions", "-F", "#{session_name}"], None)
             .map_err(|e| TMUX_CLIENT_ERROR.with_attr("error", e.to_string()))?
-            .map_failure(|exit_code| {
-                TMUX_CLIENT_ERROR.with_attr("exitCode", exit_code.to_string())
-            })?;
+            .map_failure(|ec| TMUX_CLIENT_ERROR.with_attr("exitCode", ec.to_string()))?;
 
         Ok(output
             .split("\n")
             .filter(|s| !s.is_empty())
             .map(|s| s.to_string())
             .collect())
+    }
+
+    fn is_in_session(&self) -> bool {
+        self.environment.get_config_value("TMUX").is_ok()
     }
 }

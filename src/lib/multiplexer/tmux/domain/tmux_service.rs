@@ -29,9 +29,15 @@ impl<C: TmuxClient> TmuxServicePort for TmuxService<C> {
         if !active_sessions.contains(&template.session.name) {
             // TODO: Create session
         }
-        //TODO: check if running inside of a tmux session
 
-        //TODO: Attach / Swtch to session
+        if self.client.is_in_session() {
+            println!("Inside tmux");
+            // TODO: Switch
+        } else {
+            println!("Outside tmux");
+            // TODO: Attach
+        }
+
         Ok(())
     }
 }

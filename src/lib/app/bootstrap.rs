@@ -8,7 +8,7 @@ use crate::{
         persistence::ram_template_repository::RamTemplateRepository,
         selector::fzf_selector::FzfSelector,
     },
-    multiplexer::tmux::{app::tmux_api::TmuxApi, domain::tmux_service::TmuxService},
+    multiplexer::tmux::app::bootstrap::{tmux_api, RealTmuxApi},
 };
 
 pub type RealThopService = ThopService<
@@ -41,10 +41,7 @@ pub fn thop_service() -> RealThopService {
     )
 }
 
-type RealTmuxApi = TmuxApi<TmuxService>;
-
 fn multiplexer_gateway() -> Rc<MultiMultiplexerGateway<RealTmuxApi>> {
-    let tmux_service_rc = Rc::new(TmuxService::new());
-    let tmux_api_rc = Rc::new(TmuxApi::new(tmux_service_rc));
+    let tmux_api_rc = Rc::new(tmux_api());
     Rc::new(MultiMultiplexerGateway::new(tmux_api_rc))
 }

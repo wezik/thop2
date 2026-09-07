@@ -13,6 +13,6 @@ path = "src/bin/cli/app.rs"
 
 [dependencies]
 clap = { version = "4.5.50", features = ["derive"] }
-mockall = "0.13.1"
+mockall = "0.15.0"
 serde = { version = "1.0", features = ["derive"] }
-serde_yml = "0.0.12"
+serde_yml = "0.0.13"
